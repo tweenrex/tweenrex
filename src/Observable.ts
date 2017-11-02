@@ -9,16 +9,16 @@ export class Observable<T> implements IObservable<T> {
     private _publishing: boolean
     public next = (n: T): void => {
         const self = this
-        const buffer = this._buffer
+        const buffer = self._buffer
 
-        if (this._publishing) {
+        if (self._publishing) {
             // if next is currently in progress, buffer
             buffer.splice(0, 0, n)
             return
         }
 
         // mark observable as in progress
-        this._publishing = true
+        self._publishing = true
 
         // set current to next value and mark as first run
         let c = n
@@ -40,7 +40,7 @@ export class Observable<T> implements IObservable<T> {
         } while (buffer.length)
 
         // mark this next as no longer publishing
-        this._publishing = false
+        self._publishing = false
 
         // call after next hook
         if (self.afterNext) {

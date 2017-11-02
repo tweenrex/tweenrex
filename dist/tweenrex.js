@@ -11,12 +11,28 @@ var Observable = (function () {
     function Observable() {
         var _this = this;
         this.subs = [];
+        this._buffer = [];
         this.next = function (n) {
             var self = _this;
-            var subs2 = self.subs.slice();
-            for (var i = 0; i < subs2.length; i++) {
-                subs2[i](n);
+            var buffer = self._buffer;
+            if (self._publishing) {
+                buffer.splice(0, 0, n);
+                return;
             }
+            self._publishing = true;
+            var c = n;
+            var firstRun = true;
+            do {
+                if (!firstRun) {
+                    c = self._buffer.pop();
+                }
+                var subs2 = self.subs.slice();
+                for (var i = 0; i < subs2.length; i++) {
+                    subs2[i](c);
+                }
+                firstRun = false;
+            } while (buffer.length);
+            self._publishing = false;
             if (self.afterNext) {
                 self.afterNext();
             }
@@ -41,7 +57,15 @@ var Observable = (function () {
 
 var _ = undefined;
 
-var raf = window.requestAnimationFrame;
+var raf;
+if (typeof window !== 'undefined') {
+    raf = window.requestAnimationFrame;
+}
+else {
+    raf = function (fn) {
+        setTimeout(fn, 1000 / 60);
+    };
+}
 var scheduler = new Observable();
 scheduler.beforeNext = function () {
     if (!this.subs.length) {
