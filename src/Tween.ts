@@ -1,5 +1,6 @@
 import { IAction, ITweenOptions, IObservable, ITween } from './types'
 import { Observable } from './Observable'
+import { _ } from './constants'
 
 const raf = window.requestAnimationFrame
 
@@ -31,13 +32,13 @@ export class Tween extends Observable<number> implements ITween {
     constructor(options: ITweenOptions) {
         super()
         options = options || {}
-        const self = this instanceof Tween ? this : Object.create(Tween.prototype);
+        const self = this instanceof Tween ? this : Object.create(Tween.prototype)
         self._scheduler = options.scheduler || scheduler
         self._frameSize = options.frameSize
         self.duration = options.duration
         self.currentTime = 0
         self.playbackRate = 1
-        return self;
+        return self
     }
 
     public tick = (delta: number) => {
@@ -48,11 +49,26 @@ export class Tween extends Observable<number> implements ITween {
     }
     public play(): void {
         const self = this
-        self._sub = self._sub || self._scheduler.subscribe(self.tick)
+        if (!self.isPlaying) {
+            const isForwards = self.playbackRate >= 0
+            const duration = self.duration
+
+            let n = self.currentTime
+            if (isForwards && n >= duration) {
+                n = 0
+            } else if (!isForwards && n <= 0) {
+                n = duration
+            }
+
+            self._sub = self._scheduler.subscribe(self.tick)
+            self.seek(n)
+        }
     }
     public pause(): void {
-        if (this._sub) {
-            this._sub()
+        const sub = this._sub
+        if (sub) {
+            sub()
+            this._sub = _
         }
     }
     public reverse(): void {

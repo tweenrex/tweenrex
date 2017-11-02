@@ -39,6 +39,8 @@ var Observable = (function () {
     return Observable;
 }());
 
+var _ = undefined;
+
 var raf = window.requestAnimationFrame;
 var scheduler = new Observable();
 scheduler.beforeNext = function () {
@@ -62,13 +64,13 @@ var Tween = (function (_super) {
             self.seek(n);
         };
         options = options || {};
-        var self = _this;
+        var self = _this instanceof Tween ? _this : Object.create(Tween.prototype);
         self._scheduler = options.scheduler || scheduler;
         self._frameSize = options.frameSize;
         self.duration = options.duration;
         self.currentTime = 0;
         self.playbackRate = 1;
-        return _this;
+        return self;
     }
     Object.defineProperty(Tween.prototype, "isPlaying", {
         get: function () {
@@ -79,11 +81,25 @@ var Tween = (function (_super) {
     });
     Tween.prototype.play = function () {
         var self = this;
-        self._sub = self._sub || self._scheduler.subscribe(self.tick);
+        if (!self.isPlaying) {
+            var isForwards = self.playbackRate >= 0;
+            var duration = self.duration;
+            var n = self.currentTime;
+            if (isForwards && n >= duration) {
+                n = 0;
+            }
+            else if (!isForwards && n <= 0) {
+                n = duration;
+            }
+            self._sub = self._scheduler.subscribe(self.tick);
+            self.seek(n);
+        }
     };
     Tween.prototype.pause = function () {
-        if (this._sub) {
-            this._sub();
+        var sub = this._sub;
+        if (sub) {
+            sub();
+            this._sub = _;
         }
     };
     Tween.prototype.reverse = function () {
