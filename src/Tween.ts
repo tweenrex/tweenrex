@@ -1,8 +1,15 @@
-import { IAction, ITweenOptions, IObservable, ITween } from './types'
+import { IAction, ITweenOptions, IObservable, ITween, IConsumer, IObserver } from './types'
 import { Observable } from './Observable'
 import { _ } from './constants'
 
-const raf = window.requestAnimationFrame
+let raf: IObserver<IConsumer<number>>
+if (typeof window !== 'undefined') {
+    raf = window.requestAnimationFrame
+} else {
+    raf = (fn: IConsumer<number>): void => {
+        setTimeout(fn, 1000 / 60)
+    }
+}
 
 const scheduler = new Observable<number>()
 scheduler.beforeNext = function(): void {

@@ -2,6 +2,10 @@ export interface IObserver<T> {
     (value: T): void
 }
 
+export interface IConsumer<T> {
+    (value: T): any
+}
+
 export interface IAction {
     (): void
 }
