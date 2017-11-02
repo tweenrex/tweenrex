@@ -15,33 +15,27 @@ var Observable = (function () {
         this.next = function (n) {
             var self = _this;
             var buffer = self._buffer;
-            if (self._publishing) {
-                buffer.splice(0, 0, n);
+            buffer.push(n);
+            if (buffer.length > 1) {
                 return;
             }
-            self._publishing = true;
-            var c = n;
-            var firstRun = true;
-            do {
-                if (!firstRun) {
-                    c = self._buffer.pop();
-                }
+            for (var h = 0; h < buffer.length; h++) {
                 var subs2 = self.subs.slice();
+                var c = buffer[h];
                 for (var i = 0; i < subs2.length; i++) {
                     subs2[i](c);
                 }
-                firstRun = false;
-            } while (buffer.length);
-            self._publishing = false;
-            if (self.afterNext) {
-                self.afterNext();
+            }
+            buffer.length = 0;
+            if (self.onNext) {
+                self.onNext();
             }
         };
         this.subscribe = function (fn) {
             var self = _this;
             var subs = self.subs;
-            if (self.beforeNext) {
-                self.beforeNext();
+            if (self.onSubscribe) {
+                self.onSubscribe();
             }
             subs.push(fn);
             return function () {
@@ -57,26 +51,21 @@ var Observable = (function () {
 
 var _ = undefined;
 
-var raf;
-if (typeof window !== 'undefined') {
-    raf = window.requestAnimationFrame;
-}
-else {
-    raf = function (fn) {
-        setTimeout(fn, 1000 / 60);
-    };
-}
+var raf = typeof window !== 'undefined'
+    ? window.requestAnimationFrame
+    : function (fn) { return setTimeout(function () { return fn(performance.now()); }, 1000 / 60); };
 var scheduler = new Observable();
-scheduler.beforeNext = function () {
+scheduler.onSubscribe = function () {
     if (!this.subs.length) {
         raf(this.next);
     }
 };
-scheduler.afterNext = function () {
+scheduler.onNext = function () {
     if (this.subs.length) {
         raf(this.next);
     }
 };
+
 var Tween = (function (_super) {
     __extends(Tween, _super);
     function Tween(options) {
@@ -120,10 +109,11 @@ var Tween = (function (_super) {
         }
     };
     Tween.prototype.pause = function () {
-        var sub = this._sub;
+        var self = this;
+        var sub = self._sub;
         if (sub) {
             sub();
-            this._sub = _;
+            self._sub = self._lastTime = _;
         }
     };
     Tween.prototype.reverse = function () {

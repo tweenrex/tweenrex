@@ -1,29 +1,9 @@
-import { IAction, ITweenOptions, IObservable, ITween, IConsumer, IObserver } from './types'
+import { IAction, ITweenOptions, IObservable } from './types'
 import { Observable } from './Observable'
 import { _ } from './constants'
+import { scheduler } from './scheduler'
 
-let raf: IObserver<IConsumer<number>>
-if (typeof window !== 'undefined') {
-    raf = window.requestAnimationFrame
-} else {
-    raf = (fn: IConsumer<number>): void => {
-        setTimeout(fn, 1000 / 60)
-    }
-}
-
-const scheduler = new Observable<number>()
-scheduler.beforeNext = function(): void {
-    if (!this.subs.length) {
-        raf(this.next)
-    }
-}
-scheduler.afterNext = function(): void {
-    if (this.subs.length) {
-        raf(this.next)
-    }
-}
-
-export class Tween extends Observable<number> implements ITween {
+export class Tween extends Observable<number> {
     public currentTime: number
     public duration: number
     public playbackRate: number
@@ -72,10 +52,11 @@ export class Tween extends Observable<number> implements ITween {
         }
     }
     public pause(): void {
-        const sub = this._sub
+        const self = this
+        const sub = self._sub
         if (sub) {
             sub()
-            this._sub = _
+            self._sub = self._lastTime = _
         }
     }
     public reverse(): void {

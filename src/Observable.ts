@@ -1,8 +1,8 @@
-import { IObserver, IAction, IObservable } from './types'
+import { IObserver, IAction } from './types'
 
-export class Observable<T> implements IObservable<T> {
-    public afterNext?: IAction
-    public beforeNext?: IAction
+export class Observable<T> {
+    public onNext?: IAction
+    public onSubscribe?: IAction
     public subs: IObserver<T>[] = []
 
     private _buffer: T[] = []
@@ -31,16 +31,16 @@ export class Observable<T> implements IObservable<T> {
         buffer.length = 0
 
         // call after next hook
-        if (self.afterNext) {
-            self.afterNext()
+        if (self.onNext) {
+            self.onNext()
         }
     }
 
     public subscribe = (fn: IObserver<T>): IAction => {
         const self = this
         const subs = self.subs
-        if (self.beforeNext) {
-            self.beforeNext()
+        if (self.onSubscribe) {
+            self.onSubscribe()
         }
         subs.push(fn)
         return () => {

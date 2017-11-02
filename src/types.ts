@@ -2,10 +2,6 @@ export interface IObserver<T> {
     (value: T): void
 }
 
-export interface IConsumer<T> {
-    (value: T): any
-}
-
 export interface IAction {
     (): void
 }
@@ -17,20 +13,9 @@ export interface ITweenOptions {
 }
 
 export interface IObservable<TValue> {
-    afterNext?: IAction
-    beforeNext?: IAction
+    onNext?: IAction
+    onSubscribe?: IAction
     subs?: IObserver<TValue>[]
     next: IObserver<TValue>
     subscribe: (observer: IObserver<TValue>) => IAction
-}
-
-export interface ITween {
-    duration: number
-    playbackRate: number
-    currentTime: number
-    isPlaying: boolean
-    play(): void
-    pause(): void
-    reverse(): void
-    seek(n: number): void
 }
