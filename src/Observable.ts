@@ -6,41 +6,29 @@ export class Observable<T> implements IObservable<T> {
     public subs: IObserver<T>[] = []
 
     private _buffer: T[] = []
-    private _publishing: boolean
+
     public next = (n: T): void => {
         const self = this
         const buffer = self._buffer
 
-        if (self._publishing) {
+        buffer.push(n)
+
+        if (buffer.length > 1) {
             // if next is currently in progress, buffer
-            buffer.splice(0, 0, n)
             return
         }
 
-        // mark observable as in progress
-        self._publishing = true
-
-        // set current to next value and mark as first run
-        let c = n
-        let firstRun = true
-        do {
-            if (!firstRun) {
-                // if clearing the buffer, get the next value from the end
-                c = self._buffer.pop()
-            }
-
+        for (let h = 0; h < buffer.length; h++) {
             // copy subscribers in case one subscriber unsubscribes a subsequent one
             const subs2 = self.subs.slice()
+            const c = buffer[h]
             for (let i = 0; i < subs2.length; i++) {
                 subs2[i](c)
             }
+        }
 
-            // mark first run false so additonal records are removed from the buffer
-            firstRun = false
-        } while (buffer.length)
-
-        // mark this next as no longer publishing
-        self._publishing = false
+        // clear the buffer
+        buffer.length = 0
 
         // call after next hook
         if (self.afterNext) {
