@@ -1,6 +1,6 @@
 # Tweenrex
 
-*Morph SVG Paths*
+*Reactive Tween Engine*
 
 [![npm version](https://badge.fury.io/js/tweenrex.svg)](https://badge.fury.io/js/tweenrex)
 [![Build Status](https://travis-ci.org/notoriousb1t/tweenrex.svg?branch=master)](https://travis-ci.org/notoriousb1t/tweenrex)
