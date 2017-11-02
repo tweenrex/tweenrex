@@ -31,12 +31,13 @@ export class Tween extends Observable<number> implements ITween {
     constructor(options: ITweenOptions) {
         super()
         options = options || {}
-        const self = this
+        const self = this instanceof Tween ? this : Object.create(Tween.prototype);
         self._scheduler = options.scheduler || scheduler
         self._frameSize = options.frameSize
         self.duration = options.duration
         self.currentTime = 0
         self.playbackRate = 1
+        return self;
     }
 
     public tick = (delta: number) => {
