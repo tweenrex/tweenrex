@@ -1,0 +1,11 @@
+node_modules
+src
+tests
+assets
+.alm
+.vscode
+.editorconfig
+.gitignore
+rollup.common.js
+tsconfig.json
+tslint.json
