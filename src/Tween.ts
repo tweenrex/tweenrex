@@ -4,14 +4,20 @@ import { _ } from './constants'
 import { scheduler } from './scheduler'
 
 export class Tween extends Observable<number> {
-    public currentTime: number
     public duration: number
     public playbackRate: number
+    private _time: number
     private _frameSize: number
     private _lastTime: number
     private _scheduler: IObservable<number>
     private _sub: IAction
 
+    public get currentTime(): number {
+        return this._time
+    }
+    public set currentTime(time: number) {
+        this.seek(time)
+    }
     public get isPlaying(): boolean {
         return !!this._sub
     }
@@ -30,7 +36,7 @@ export class Tween extends Observable<number> {
 
     public tick = (delta: number) => {
         const self = this
-        const n = self.currentTime + (self._frameSize || (delta - (self._lastTime || delta)) * self.playbackRate)
+        const n = self._time + (self._frameSize || (delta - (self._lastTime || delta)) * self.playbackRate)
         self._lastTime = delta
         self.seek(n)
     }
@@ -40,7 +46,7 @@ export class Tween extends Observable<number> {
             const isForwards = self.playbackRate >= 0
             const duration = self.duration
 
-            let n = self.currentTime
+            let n = self._time
             if (isForwards && n >= duration) {
                 n = 0
             } else if (!isForwards && n <= 0) {
@@ -85,7 +91,7 @@ export class Tween extends Observable<number> {
             self.pause()
         }
 
-        self.currentTime = n
+        self._time = n
         self.next(n / (duration || 1))
         return self
     }

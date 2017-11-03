@@ -72,7 +72,7 @@ var Tween = (function (_super) {
         var _this = _super.call(this) || this;
         _this.tick = function (delta) {
             var self = _this;
-            var n = self.currentTime + (self._frameSize || (delta - (self._lastTime || delta)) * self.playbackRate);
+            var n = self._time + (self._frameSize || (delta - (self._lastTime || delta)) * self.playbackRate);
             self._lastTime = delta;
             self.seek(n);
         };
@@ -85,6 +85,16 @@ var Tween = (function (_super) {
         self.playbackRate = 1;
         return self;
     }
+    Object.defineProperty(Tween.prototype, "currentTime", {
+        get: function () {
+            return this._time;
+        },
+        set: function (time) {
+            this.seek(time);
+        },
+        enumerable: true,
+        configurable: true
+    });
     Object.defineProperty(Tween.prototype, "isPlaying", {
         get: function () {
             return !!this._sub;
@@ -97,7 +107,7 @@ var Tween = (function (_super) {
         if (!self.isPlaying) {
             var isForwards = self.playbackRate >= 0;
             var duration = self.duration;
-            var n = self.currentTime;
+            var n = self._time;
             if (isForwards && n >= duration) {
                 n = 0;
             }
@@ -141,7 +151,7 @@ var Tween = (function (_super) {
             n = 0;
             self.pause();
         }
-        self.currentTime = n;
+        self._time = n;
         self.next(n / (duration || 1));
         return self;
     };

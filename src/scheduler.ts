@@ -3,7 +3,7 @@ import { Observable } from './Observable'
 const raf =
     typeof window !== 'undefined'
         ? window.requestAnimationFrame
-        : (fn: FrameRequestCallback) => setTimeout(() => fn(performance.now()), 1000 / 60)
+        : (fn: FrameRequestCallback) => setTimeout(() => fn(Date.now()), 1000 / 60)
 
 export const scheduler = new Observable<number>()
 scheduler.onSubscribe = function(): void {
