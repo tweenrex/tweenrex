@@ -9,7 +9,7 @@
 
 ## Features
 
- - Playback controls: play, pause, reverse, playbackRate, seek, etc.
+ - Playback controls: play, pause, reverse, playbackRate, seek, labels, etc.
  - Simple Reactive API with no strings attached
  - Super tiny with plans to stay that way
  - Free for commercial and non-commerical use under the MIT license
@@ -40,6 +40,7 @@ Name | Description |
 --- | --- |
 duration | The duration of the tween in milliseconds |
 frameSize | Enforces a fixed amount of time per frame.  If ```0```, Tweens will use actual deltas and attempt to sync to requestAnimationFrame.  The default value is ```0```. |
+labels | A dictionary of named times used for seeking |
 scheduler | The observable that provides new time deltas.  If ```undefined```, the Tween will use a default scheduler.  The default value is ```undefined```.  |
 
 ### Properties
@@ -59,6 +60,12 @@ Pauses the tween.
 
 #### reverse()
 Flips the playbackRate to the opposite direction.
+
+#### getLabel(name)
+Gets the time for a label.
+
+#### setLabel(name, time)
+Sets a label at the time specified.  Set to undefined to clear the label
 
 #### seek(time)
 Seeks to the time provided.  If the time is not within the range of the tween, it will be clamped to either ```0``` or the ```duration```.

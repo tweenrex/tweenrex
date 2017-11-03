@@ -53,7 +53,7 @@ var _ = undefined;
 
 var raf = typeof window !== 'undefined'
     ? window.requestAnimationFrame
-    : function (fn) { return setTimeout(function () { return fn(performance.now()); }, 1000 / 60); };
+    : function (fn) { return setTimeout(function () { return fn(Date.now()); }, 1000 / 60); };
 var scheduler = new Observable();
 scheduler.onSubscribe = function () {
     if (!this.subs.length) {
@@ -65,6 +65,10 @@ scheduler.onNext = function () {
         raf(this.next);
     }
 };
+
+function isString(val) {
+    return typeof val === 'string';
+}
 
 var Tween = (function (_super) {
     __extends(Tween, _super);
@@ -83,6 +87,7 @@ var Tween = (function (_super) {
         self.duration = options.duration;
         self.currentTime = 0;
         self.playbackRate = 1;
+        self.labels = options.labels || {};
         return self;
     }
     Object.defineProperty(Tween.prototype, "currentTime", {
@@ -143,17 +148,25 @@ var Tween = (function (_super) {
         var self = this;
         var isForwards = self.playbackRate >= 0;
         var duration = self.duration;
-        if (isForwards && n >= duration) {
-            n = duration;
+        var c = isString(n) ? self.labels[n] : n;
+        if (isForwards && c >= duration) {
+            c = duration;
             self.pause();
         }
-        else if (!isForwards && n <= 0) {
-            n = 0;
+        else if (!isForwards && c <= 0) {
+            c = 0;
             self.pause();
         }
-        self._time = n;
-        self.next(n / (duration || 1));
+        self._time = c;
+        self.next(c / (duration || 1));
         return self;
+    };
+    Tween.prototype.getLabel = function (name) {
+        return this.labels[name];
+    };
+    Tween.prototype.setLabel = function (name, time) {
+        this.labels[name] = time;
+        return this;
     };
     return Tween;
 }(Observable));
