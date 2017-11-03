@@ -2,10 +2,12 @@ import { IAction, ITweenOptions, IObservable } from './types'
 import { Observable } from './Observable'
 import { _ } from './constants'
 import { scheduler } from './scheduler'
+import { isString } from './utilities/inspect'
 
 export class Tween extends Observable<number> {
     public duration: number
     public playbackRate: number
+    public labels: Record<string, number>
     private _time: number
     private _frameSize: number
     private _lastTime: number
@@ -31,6 +33,7 @@ export class Tween extends Observable<number> {
         self.duration = options.duration
         self.currentTime = 0
         self.playbackRate = 1
+        self.labels = options.labels || {}
         return self
     }
 
@@ -40,6 +43,7 @@ export class Tween extends Observable<number> {
         self._lastTime = delta
         self.seek(n)
     }
+
     public play(): this {
         const self = this
         if (!self.isPlaying) {
@@ -78,21 +82,37 @@ export class Tween extends Observable<number> {
         this.playbackRate *= -1
         return this
     }
-    public seek(n: number): this {
+    public seek(n: number | string): this {
         const self = this
         const isForwards = self.playbackRate >= 0
         const duration = self.duration
 
-        if (isForwards && n >= duration) {
-            n = duration
+        // resolve label
+        let c = isString(n) ? self.labels[n as string] : n as number
+
+        if (isForwards && c >= duration) {
+            c = duration
             self.pause()
-        } else if (!isForwards && n <= 0) {
-            n = 0
+        } else if (!isForwards && c <= 0) {
+            c = 0
             self.pause()
         }
 
-        self._time = n
-        self.next(n / (duration || 1))
+        self._time = c
+        self.next(c / (duration || 1))
         return self
+    }
+    /**
+     * Gets the time at a particul label
+     */
+    public getLabel(name: string): number {
+        return this.labels[name]
+    }
+    /**
+     * Sets a label at a particular time.  Set to undefined to clear.
+     */
+    public setLabel(name: string, time?: number): this {
+        this.labels[name] = time
+        return this
     }
 }

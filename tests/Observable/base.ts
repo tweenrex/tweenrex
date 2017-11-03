@@ -1,5 +1,5 @@
 import { assert } from 'chai'
-import { Observable } from '../src/Observable'
+import { Observable } from '../../src/Observable'
 
 describe('Observable()', () => {
     it('publishes values to subscribers', () => {

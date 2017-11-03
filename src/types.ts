@@ -10,6 +10,7 @@ export interface ITweenOptions {
     frameSize?: number
     duration?: number
     scheduler?: IObservable<number>
+    labels?: Record<string, number>
 }
 
 export interface IObservable<TValue> {
