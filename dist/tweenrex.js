@@ -107,6 +107,14 @@ var Tween = (function (_super) {
             self._sub = self._scheduler.subscribe(self.tick);
             self.seek(n);
         }
+        return self;
+    };
+    Tween.prototype.restart = function () {
+        var self = this;
+        return self
+            .pause()
+            .seek(self.playbackRate >= 0 ? 0 : self.duration)
+            .play();
     };
     Tween.prototype.pause = function () {
         var self = this;
@@ -115,9 +123,11 @@ var Tween = (function (_super) {
             sub();
             self._sub = self._lastTime = _;
         }
+        return self;
     };
     Tween.prototype.reverse = function () {
         this.playbackRate *= -1;
+        return this;
     };
     Tween.prototype.seek = function (n) {
         var self = this;
@@ -133,6 +143,7 @@ var Tween = (function (_super) {
         }
         self.currentTime = n;
         self.next(n / (duration || 1));
+        return self;
     };
     return Tween;
 }(Observable));

@@ -34,7 +34,7 @@ export class Tween extends Observable<number> {
         self._lastTime = delta
         self.seek(n)
     }
-    public play(): void {
+    public play(): this {
         const self = this
         if (!self.isPlaying) {
             const isForwards = self.playbackRate >= 0
@@ -50,19 +50,29 @@ export class Tween extends Observable<number> {
             self._sub = self._scheduler.subscribe(self.tick)
             self.seek(n)
         }
+        return self
     }
-    public pause(): void {
+    public restart(): this {
+        const self = this
+        return self
+            .pause()
+            .seek(self.playbackRate >= 0 ? 0 : self.duration)
+            .play()
+    }
+    public pause(): this {
         const self = this
         const sub = self._sub
         if (sub) {
             sub()
             self._sub = self._lastTime = _
         }
+        return self
     }
-    public reverse(): void {
+    public reverse(): this {
         this.playbackRate *= -1
+        return this
     }
-    public seek(n: number): void {
+    public seek(n: number): this {
         const self = this
         const isForwards = self.playbackRate >= 0
         const duration = self.duration
@@ -77,5 +87,6 @@ export class Tween extends Observable<number> {
 
         self.currentTime = n
         self.next(n / (duration || 1))
+        return self
     }
 }
