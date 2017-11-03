@@ -67,8 +67,8 @@ Gets the time for a label.
 #### setLabel(name, time)
 Sets a label at the time specified.  Set to undefined to clear the label
 
-#### seek(time)
-Seeks to the time provided.  If the time is not within the range of the tween, it will be clamped to either ```0``` or the ```duration```.
+#### seek(timeOrLabel)
+Seeks to the time or label.  If the resolved time is not within the range of the tween, it will be clamped to either ```0``` or the ```duration```.
 
 #### subscribe(observer)
 Subscribes the observer to changes in the value.  The value provided is a number between 0 and 1 representing 0% to 100% of time elapsed.  This value can be passed to renderer functions such as the ones [Polymorph](https://github.com/notoriousb1t/polymorph) provides.
