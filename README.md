@@ -119,14 +119,15 @@ t1.play()
 #### options
 Name | Description |
 --- | --- |
+direction| The axis to observe.  'x' detects scrolling horizontally and 'y' detects scrolling vertically.  'y' is the default.|
 scheduler | The observable that provides new time deltas.  If ```undefined```, it will use a default scheduler.  The default value is ```undefined```.  |
 targets|An element or selector to observe scroll position|
 
 ### Properties
 Name | Description |
 --- | --- |
-target | The active target being watched |
 isPlaying | If true, the target is being watched |
+target | The active target being watched |
 
 ### Functions
 

@@ -49,8 +49,9 @@ export interface ITweenRex extends IObservable<number> {
 }
 
 export interface IScrollOptions {
+    direction?: 'x' | 'y'
     targets: string | Element
-    scheduler: IObservable<number>
+    scheduler?: IObservable<number>
 }
 
 export interface ITyrannoScrollus extends IObservable<number> {

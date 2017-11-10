@@ -1,18 +1,28 @@
 import { IScrollOptions, ITyrannoScrollus } from './types'
 import { _ } from './internal/constants'
-import { newify } from './internal/newify';
+import { newify } from './internal/newify'
 import { TRexObservable } from './Observable'
 import { scheduler } from './scheduler'
+import { resolveTarget } from './internal/resolveTarget';
 
 export function TyrannoScrollus(options: IScrollOptions): ITyrannoScrollus {
     const self = TRexObservable<number, ITyrannoScrollus>(newify(this, TyrannoScrollus))
-    self.target = options.targets instanceof Element ? options.targets : document.querySelector(options.targets)
+    self.target = resolveTarget(options.targets)
     self._scheduler = options.scheduler || scheduler
-    self.tick = () => {
-        const target = self.target
-        self.next(target.scrollTop / (target.scrollHeight - target.clientHeight))
-    }
+    self.tick = (options.direction === 'x' ? updateX : updateY).bind(self)
     return self
+}
+
+function updateX(this: ITyrannoScrollus): void {
+    const self = this
+    const target = self.target
+    self.next(target.scrollLeft / (target.scrollWidth - target.clientWidth))
+}
+
+function updateY(this: ITyrannoScrollus): void {
+    const self = this
+    const target = self.target
+    self.next(target.scrollTop / (target.scrollHeight - target.clientHeight))
 }
 
 TyrannoScrollus.prototype = {

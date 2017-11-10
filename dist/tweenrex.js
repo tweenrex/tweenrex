@@ -81,15 +81,26 @@ var scheduler = TRexObservable({
     }
 });
 
+function resolveTarget(target) {
+    return target instanceof Element ? target : document.querySelector(target);
+}
+
 function TyrannoScrollus(options) {
     var self = TRexObservable(newify(this, TyrannoScrollus));
-    self.target = options.targets instanceof Element ? options.targets : document.querySelector(options.targets);
+    self.target = resolveTarget(options.targets);
     self._scheduler = options.scheduler || scheduler;
-    self.tick = function () {
-        var target = self.target;
-        self.next(target.scrollTop / (target.scrollHeight - target.clientHeight));
-    };
+    self.tick = (options.direction === 'x' ? updateX : updateY).bind(self);
     return self;
+}
+function updateX() {
+    var self = this;
+    var target = self.target;
+    self.next(target.scrollLeft / (target.scrollWidth - target.clientWidth));
+}
+function updateY() {
+    var self = this;
+    var target = self.target;
+    self.next(target.scrollTop / (target.scrollHeight - target.clientHeight));
 }
 TyrannoScrollus.prototype = {
     get isPlaying() {
