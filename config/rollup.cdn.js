@@ -3,8 +3,9 @@ import typescript from 'rollup-plugin-typescript';
 import nodeResolve from 'rollup-plugin-node-resolve';
 
 module.exports = {
-  input: 'src/index.ts',
+  input: 'src/_browser.ts',
   name: 'tweenrex',
+  exports: 'none',
   output: {
     file: 'dist/tweenrex.js',
     format: 'iife'

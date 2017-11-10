@@ -1,2 +1,3 @@
-export * from './types'
-export { Tween } from './Tween'
+export { TRexObservable } from './Observable'
+export { TyrannoScrollus } from './TyrannoScrollus'
+export { TweenRex } from './TweenRex'

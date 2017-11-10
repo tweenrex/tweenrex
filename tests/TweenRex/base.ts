@@ -1,9 +1,9 @@
 import { assert } from 'chai'
-import { Tween } from '../../src/Tween'
+import { TweenRex } from '../../src/TweenRex'
 
 describe('Tween()', () => {
     it('publishes values to subscribers', () => {
-        const obs = new Tween({
+        const obs = TweenRex({
             duration: 1000
         })
 
@@ -17,7 +17,7 @@ describe('Tween()', () => {
     })
 
     it('publishes values to subscribers', () => {
-        const obs = new Tween({ duration: 100 })
+        const obs = TweenRex({ duration: 100 })
 
         let i = 0
         obs.subscribe((v: number) => {
@@ -29,7 +29,7 @@ describe('Tween()', () => {
     })
 
     it('publishes multiple values to subscribers', () => {
-        const obs = new Tween({ duration: 100 })
+        const obs = TweenRex({ duration: 100 })
 
         let i = 0
         obs.subscribe((v: number) => {
@@ -42,7 +42,7 @@ describe('Tween()', () => {
     })
 
     it('unsubscribes properly', () => {
-        const obs = new Tween({ duration: 100 })
+        const obs = TweenRex({ duration: 100 })
 
         let i = 0
         const unsubscribe = obs.subscribe((v: number) => {
@@ -57,7 +57,7 @@ describe('Tween()', () => {
     })
 
     it('seeks to the correct time', () => {
-        const tween = new Tween({ duration: 100 })
+        const tween = TweenRex({ duration: 100 })
         tween.seek(50)
         assert.equal(tween.currentTime, 50)
     })

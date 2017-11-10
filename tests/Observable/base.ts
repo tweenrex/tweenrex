@@ -1,9 +1,9 @@
 import { assert } from 'chai'
-import { Observable } from '../../src/Observable'
+import { TRexObservable } from '../../src/Observable'
 
 describe('Observable()', () => {
     it('publishes values to subscribers', () => {
-        const obs = new Observable<number>()
+        const obs = TRexObservable<number>()
 
         let i = 0
         obs.subscribe((v: number) => {
@@ -15,7 +15,7 @@ describe('Observable()', () => {
     })
 
     it('publishes multiple values to subscribers', () => {
-        const obs = new Observable<number>()
+        const obs = TRexObservable<number>()
 
         let i = 0
         obs.subscribe((v: number) => {
@@ -28,7 +28,7 @@ describe('Observable()', () => {
     })
 
     it('unsubscribes properly', () => {
-        const obs = new Observable<number>()
+        const obs = TRexObservable<number>()
 
         let i = 0
         const unsubscribe = obs.subscribe((v: number) => {
@@ -43,7 +43,7 @@ describe('Observable()', () => {
     })
 
     it('provides values in the same order that they were published', () => {
-        const obs = new Observable<number>()
+        const obs = TRexObservable<number>()
 
         let values: number[] = []
         obs.subscribe((v: number) => {

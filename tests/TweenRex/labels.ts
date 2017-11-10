@@ -1,9 +1,9 @@
 import { assert } from 'chai'
-import { Tween } from '../../src/Tween'
+import { TweenRex } from '../../src/TweenRex'
 
-describe('Tween.setLabel()', () => {
+describe('TweenRex.setLabel()', () => {
     it('seeks to a label', () => {
-        const tween = new Tween({ duration: 100 })
+        const tween = TweenRex({ duration: 100 })
         tween.setLabel('three-quarters', 75)
 
         tween.seek('three-quarters')
@@ -11,7 +11,7 @@ describe('Tween.setLabel()', () => {
     })
 
     it('seeks to a label defined in the constructor', () => {
-        const tween = new Tween({
+        const tween = TweenRex({
             duration: 100,
             labels: {
                 seventyFive: 75

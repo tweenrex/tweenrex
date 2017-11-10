@@ -1,9 +1,9 @@
-import { Tween } from '../../src/Tween'
+import { TweenRex } from '../../src/TweenRex'
 
-describe('Tween.play()', () => {
+describe('TweenRex.play()', () => {
 
     it('plays to the end', (done: Function) => {
-        const obs = new Tween({ duration: 100 })
+        const obs = TweenRex({ duration: 100 })
 
         obs.subscribe((v: number) => {
             if (v === 1) {
@@ -15,7 +15,7 @@ describe('Tween.play()', () => {
     })
 
     it('plays to the end when reversed', (done: Function) => {
-        const obs = new Tween({ duration: 100 })
+        const obs = TweenRex({ duration: 100 })
 
         let offset1Hit: boolean
         obs.subscribe((v: number) => {

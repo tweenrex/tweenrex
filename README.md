@@ -1,6 +1,6 @@
-# Tweenrex
+# tweenrex
 
-*Reactive Tween Engine*
+*Reactive Tweening Engine*
 
 [![npm version](https://badge.fury.io/js/tweenrex.svg)](https://badge.fury.io/js/tweenrex)
 [![Build Status](https://travis-ci.org/notoriousb1t/tweenrex.svg?branch=master)](https://travis-ci.org/notoriousb1t/tweenrex)
@@ -10,18 +10,20 @@
 ## Features
 
  - Playback controls: play, pause, reverse, playbackRate, seek, labels, etc.
+ - Animate anything with render functions
+ - Scroll sync any element to an animation, not just the documentElement
  - Simple Reactive API with no strings attached
  - Super tiny with plans to stay that way
  - Free for commercial and non-commerical use under the MIT license
 
 ## How to Use
 
-### Tween
-Creates a new Tween Observable that controls your animation.
+### TweenRex
+Creates a new time Observable that tweens for a set period of time.
 
 ```js
 // create an observable
-const t1 = new tweenrex.Tween({
+const t1 = TweenRex({
     duration: 1000
 })
 
@@ -48,7 +50,7 @@ Name | Description |
 --- | --- |
 currentTime | The current time of the Tween |
 duration | The total duration of the Tween |
-isPlaying | If true, the Tween is actively playing |
+isPlaying | If true, TweenRex is actively playing |
 playbackRate | The rate at which the Tween is playing. The default value is 1 meaning 100% speed. |
 
 ### Functions
@@ -74,7 +76,7 @@ Seeks to the time or label.  If the resolved time is not within the range of the
 Subscribes the observer to changes in the value.  The value provided is a number between 0 and 1 representing 0% to 100% of time elapsed.  This value can be passed to renderer functions such as the ones [Polymorph](https://github.com/notoriousb1t/polymorph) provides.
 
 ```js
-var tween = new tweenrex.Tween({ duration: 1000 })
+var tween = TweenRex({ duration: 1000 })
 var target = document.querySelector('#target')
 var svgRenderer = polymorph.interpolate(['#first path', '#second path'])
 
@@ -88,7 +90,70 @@ tween.play();
 This returns a function that unsubscribes:
 
 ```js
-var tween = new tweenrex.Tween(...)
+var tween = new TweenRex(...)
+var unsubscribe = tween.subscribe(o => ...);
+
+// call unsubscribe
+unsubscribe();
+```
+
+### TyrannoScrollus
+Creates a scroll Observable that updates based on scroll position of an element.
+
+```js
+// create an observable
+const t1 = TyrannoScrollus({
+    targets: '#myTarget'
+})
+
+// subscribe to changes to the scroll position of an element
+t1.subscribe(offset => {
+    // offset is a number between 0 and 1 representing 0% to 100% of scroll position
+    // todo: write some code
+})
+
+// start listening
+t1.play()
+```
+
+#### options
+Name | Description |
+--- | --- |
+scheduler | The observable that provides new time deltas.  If ```undefined```, it will use a default scheduler.  The default value is ```undefined```.  |
+targets|An element or selector to observe scroll position|
+
+### Properties
+Name | Description |
+--- | --- |
+target | The active target being watched |
+isPlaying | If true, the target is being watched |
+
+### Functions
+
+#### play()
+Starts watching for changes in the scroll position
+#### pause()
+Stops watching for changes in the scroll position
+
+#### subscribe(observer)
+Subscribes the observer to changes in the value.  The value provided is a number between 0 and 1 representing 0% to 100% of scroll position.  This value can be passed to renderer functions such as the ones [Polymorph](https://github.com/notoriousb1t/polymorph) provides.
+
+```js
+var target = document.querySelector('#target')
+
+var tween = TyrannoScrollus({ targets: target })
+var svgRenderer = polymorph.interpolate(['#first path', '#second path'])
+
+tween.subscribe(o => {
+    target.setAttribute('d', svgRenderer(o))
+});
+
+tween.play();
+```
+
+This returns a function that unsubscribes:
+
+```js
 var unsubscribe = tween.subscribe(o => ...);
 
 // call unsubscribe
@@ -98,16 +163,22 @@ unsubscribe();
 ## Setup
 
 ### Setup for CDN
-Include this script
+Include this script.  It will add TweenRex and TyrannoScrollus to the window.
 ```html
 <script src="https://unpkg.com/tweenrex/dist/tweenrex.min.js"></script>
 ```
 
 ### Setup for NPM
+
+Run this command to install from npm.  TweenRex and TyrannoScrollus will be added to the window.
 ```bash
 npm install tweenrex --save
 ```
 
+Then import from the module
+```js
+import { TweenRex, TyrannoScrollus } from 'tweenrex'
+```
 ## License
 This library is licensed under MIT.
 

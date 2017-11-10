@@ -1,18 +1,16 @@
-import { Observable } from './Observable'
+import { TRexObservable } from './Observable'
+import { IObservable } from './types'
+import { onNextFrame } from './internal/onNextFrame'
 
-const raf =
-    typeof window !== 'undefined'
-        ? window.requestAnimationFrame
-        : (fn: FrameRequestCallback) => setTimeout(() => fn(Date.now()), 1000 / 60)
-
-export const scheduler = new Observable<number>()
-scheduler.onSubscribe = function(): void {
-    if (!this.subs.length) {
-        raf(this.next)
+export const scheduler: IObservable<number> = TRexObservable<number>({
+    onSubscribe(): void {
+        if (!this.subs.length) {
+            onNextFrame(this.next)
+        }
+    },
+    next(): void {
+        if (this.subs.length) {
+            onNextFrame(this.next)
+        }
     }
-}
-scheduler.onNext = function(): void {
-    if (this.subs.length) {
-        raf(this.next)
-    }
-}
+})

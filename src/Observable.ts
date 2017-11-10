@@ -1,15 +1,17 @@
-import { IObserver, IAction } from './types'
+import { IObserver, IAction, IObservable } from './types'
+import { inherit } from './internal/inherit'
 
-export class Observable<T> {
-    public onNext?: IAction
-    public onSubscribe?: IAction
-    public subs: IObserver<T>[] = []
+export function TRexObservable<TValue, T extends {} = {}>(input?: T): T & IObservable<TValue> {
+    // lie to the TypeScript compiler
+    const self = ((input || {}) as any) as T & IObservable<TValue>
+    const next: IObserver<TValue> = self.next && self.next.bind(self)
+    const subs: IObserver<TValue>[] = (self.subs = [])
 
-    private _buffer: T[] = []
-
-    public next = (n: T): void => {
-        const self = this
-        const buffer = self._buffer
+    let buffer: TValue[]
+    self.next = (n: TValue): void => {
+        if (!buffer) {
+            buffer = []
+        }
 
         buffer.push(n)
 
@@ -20,7 +22,7 @@ export class Observable<T> {
 
         for (let h = 0; h < buffer.length; h++) {
             // copy subscribers in case one subscriber unsubscribes a subsequent one
-            const subs2 = self.subs.slice()
+            const subs2 = subs.slice()
             const c = buffer[h]
             for (let i = 0; i < subs2.length; i++) {
                 subs2[i](c)
@@ -31,22 +33,32 @@ export class Observable<T> {
         buffer.length = 0
 
         // call after next hook
-        if (self.onNext) {
-            self.onNext()
+        if (next) {
+            next(n)
         }
     }
 
-    public subscribe = (fn: IObserver<T>): IAction => {
+    // add observable prototype
+    inherit(self, TRexObservable.prototype)
+
+    return self
+}
+
+TRexObservable.prototype = {
+    subscribe(fn: IObserver<any>): IAction {
         const self = this
         const subs = self.subs
         if (self.onSubscribe) {
-            self.onSubscribe()
+            self.onSubscribe(fn)
         }
         subs.push(fn)
         return () => {
             const index = subs.indexOf(fn)
             if (index !== -1) {
                 subs.splice(index, 1)
+                if (self.onUnsubscribe) {
+                    self.onUnsubscribe(fn)
+                }
             }
         }
     }

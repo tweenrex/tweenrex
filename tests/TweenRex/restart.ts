@@ -1,8 +1,8 @@
-import { Tween } from '../../src/Tween'
+import { TweenRex } from '../../src/TweenRex'
 
-describe('Tween.restart()', () => {
+describe('TweenRex.restart()', () => {
     it('restart works properly', (done: Function) => {
-        const tween = new Tween({ duration: 100 })
+        const tween = TweenRex({ duration: 100 })
 
         let offset1Hit = 0
         tween.subscribe((v: number) => {
