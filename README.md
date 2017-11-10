@@ -1,4 +1,4 @@
-# tweenrex
+# TweenRex
 
 *Reactive Tweening Engine*
 
