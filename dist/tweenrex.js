@@ -20,6 +20,7 @@ function TRexObservable(input) {
     var self = (input || {});
     var next = self.next && self.next.bind(self);
     var subs = (self.subs = []);
+    var c;
     var buffer;
     self.next = function (n) {
         if (!buffer) {
@@ -31,9 +32,13 @@ function TRexObservable(input) {
         }
         for (var h = 0; h < buffer.length; h++) {
             var subs2 = subs.slice();
-            var c = buffer[h];
+            var n_1 = buffer[h];
+            if (self.distinct && n_1 === c) {
+                continue;
+            }
+            c = n_1;
             for (var i = 0; i < subs2.length; i++) {
-                subs2[i](c);
+                subs2[i](n_1);
             }
         }
         buffer.length = 0;
@@ -89,6 +94,7 @@ function TyrannoScrollus(options) {
     var self = TRexObservable(newify(this, TyrannoScrollus));
     self.target = resolveTarget(options.targets);
     self._scheduler = options.scheduler || scheduler;
+    self.distinct = options.distinct !== false;
     self.tick = (options.direction === 'x' ? updateX : updateY).bind(self);
     return self;
 }
@@ -130,6 +136,7 @@ function TweenRex(options) {
     var frameSize = options.frameSize;
     self._scheduler = options.scheduler || scheduler;
     self.duration = options.duration;
+    self.distinct = options.distinct !== false;
     self.currentTime = 0;
     self.playbackRate = 1;
     self.labels = options.labels || {};

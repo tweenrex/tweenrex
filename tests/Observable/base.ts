@@ -23,8 +23,8 @@ describe('Observable()', () => {
         })
 
         obs.next(2)
-        obs.next(2)
-        assert.equal(i, 4)
+        obs.next(3)
+        assert.equal(i, 5)
     })
 
     it('unsubscribes properly', () => {

@@ -9,6 +9,7 @@ export function TyrannoScrollus(options: IScrollOptions): ITyrannoScrollus {
     const self = TRexObservable<number, ITyrannoScrollus>(newify(this, TyrannoScrollus))
     self.target = resolveTarget(options.targets)
     self._scheduler = options.scheduler || scheduler
+    self.distinct = options.distinct !== false;
     self.tick = (options.direction === 'x' ? updateX : updateY).bind(self)
     return self
 }

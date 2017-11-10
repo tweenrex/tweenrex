@@ -8,12 +8,17 @@ export interface IAction {
 
 export interface ITweenOptions {
     frameSize?: number
+    /**
+     * When true, subscribe will emit changes in value
+     */
+    distinct?: boolean
     duration?: number
     scheduler?: IObservable<number>
     labels?: Record<string, number>
 }
 
 export interface IObservable<TValue> {
+    distinct?: boolean
     onSubscribe?: IAction
     onUnsubscribe?: IAction
     subs?: IObserver<TValue>[]
@@ -50,6 +55,7 @@ export interface ITweenRex extends IObservable<number> {
 
 export interface IScrollOptions {
     direction?: 'x' | 'y'
+    distinct?: boolean
     targets: string | Element
     scheduler?: IObservable<number>
 }

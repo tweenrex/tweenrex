@@ -7,6 +7,7 @@ export function TRexObservable<TValue, T extends {} = {}>(input?: T): T & IObser
     const next: IObserver<TValue> = self.next && self.next.bind(self)
     const subs: IObserver<TValue>[] = (self.subs = [])
 
+    let c: TValue
     let buffer: TValue[]
     self.next = (n: TValue): void => {
         if (!buffer) {
@@ -23,9 +24,15 @@ export function TRexObservable<TValue, T extends {} = {}>(input?: T): T & IObser
         for (let h = 0; h < buffer.length; h++) {
             // copy subscribers in case one subscriber unsubscribes a subsequent one
             const subs2 = subs.slice()
-            const c = buffer[h]
+            const n = buffer[h]
+
+            // skip value if
+            if (self.distinct && n === c) {
+              continue
+            }
+            c = n
             for (let i = 0; i < subs2.length; i++) {
-                subs2[i](c)
+                subs2[i](n)
             }
         }
 

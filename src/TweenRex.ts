@@ -11,6 +11,7 @@ export function TweenRex(options: ITweenOptions): ITweenRex {
     const frameSize = options.frameSize
     self._scheduler = options.scheduler || scheduler
     self.duration = options.duration
+    self.distinct = options.distinct !== false;
     self.currentTime = 0
     self.playbackRate = 1
     self.labels = options.labels || {}
