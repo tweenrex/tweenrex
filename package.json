@@ -3,7 +3,7 @@
     "bugs": {
         "url": "https://github.com/notoriousb1t/tweenrex/issues"
     },
-    "description": "Lightweight Tween/Animation Player",
+    "description": "Reactive Tweening Engine",
     "devDependencies": {
         "@types/chai": "^4.0.4",
         "@types/mocha": "^2.2.43",
