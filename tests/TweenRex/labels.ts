@@ -2,7 +2,7 @@ import { assert } from 'chai'
 import { TweenRex } from '../../src/TweenRex'
 
 describe('TweenRex.setLabel()', () => {
-    it('seeks to a label', () => {
+    test('seeks to a label', () => {
         const tween = TweenRex({ duration: 100 })
         tween.setLabel('three-quarters', 75)
 
@@ -10,7 +10,7 @@ describe('TweenRex.setLabel()', () => {
         assert.equal(tween.currentTime, 75)
     })
 
-    it('seeks to a label defined in the constructor', () => {
+    test('seeks to a label defined in the constructor', () => {
         const tween = TweenRex({
             duration: 100,
             labels: {

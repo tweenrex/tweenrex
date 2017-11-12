@@ -2,7 +2,7 @@ import { TweenRex } from '../../src/TweenRex'
 
 describe('TweenRex.play()', () => {
 
-    it('plays to the end', (done: Function) => {
+    test('plays to the end', (done: Function) => {
         const obs = TweenRex({ duration: 100 })
 
         obs.subscribe((v: number) => {
@@ -14,7 +14,7 @@ describe('TweenRex.play()', () => {
         obs.play()
     })
 
-    it('plays to the end when reversed', (done: Function) => {
+    test('plays to the end when reversed', (done: Function) => {
         const obs = TweenRex({ duration: 100 })
 
         let offset1Hit: boolean
