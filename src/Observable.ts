@@ -1,5 +1,7 @@
 import { IObserver, IAction, IObservable } from './types'
 import { inherit } from './internal/inherit'
+import { isArray } from './internal/inspect';
+import { removeAll, addAll } from './internal/arrays';
 
 export function TRexObservable<TValue, T extends {} = {}>(input?: T): T & IObservable<TValue> {
     // lie to the TypeScript compiler
@@ -28,7 +30,7 @@ export function TRexObservable<TValue, T extends {} = {}>(input?: T): T & IObser
 
             // skip value if
             if (self.distinct && n === c) {
-              continue
+                continue
             }
             c = n
             for (let i = 0; i < subs2.length; i++) {
@@ -52,20 +54,21 @@ export function TRexObservable<TValue, T extends {} = {}>(input?: T): T & IObser
 }
 
 TRexObservable.prototype = {
-    subscribe(fn: IObserver<any>): IAction {
+    subscribe(fn: IObserver<any>[]): IAction {
         const self = this
         const subs = self.subs
-        if (self.onSubscribe) {
-            self.onSubscribe(fn)
+
+        if (!isArray(fn)) {
+            fn = [fn]
         }
-        subs.push(fn)
+        if (self.onSubscribe) {
+            self.onSubscribe()
+        }
+        addAll(subs, fn)
         return () => {
-            const index = subs.indexOf(fn)
-            if (index !== -1) {
-                subs.splice(index, 1)
-                if (self.onUnsubscribe) {
-                    self.onUnsubscribe(fn)
-                }
+            removeAll(subs, fn)
+            if (self.onUnsubscribe) {
+                self.onUnsubscribe()
             }
         }
     }

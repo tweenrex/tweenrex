@@ -23,14 +23,16 @@ export interface IObservable<TValue> {
     onUnsubscribe?: IAction
     subs?: IObserver<TValue>[]
     next: IObserver<TValue>
-    subscribe: (observer: IObserver<TValue>) => IAction
+    subscribe: (observer: IObserver<TValue> | IObserver<TValue>[]) => IAction
 }
 
 export interface ITweenRex extends IObservable<number> {
+    _cursor: number
     _time: number
     _lastTime: number
     _scheduler: IObservable<number>
     _sub: IAction
+    _tweens: { pos: number, tween: ITweenRex }[]
     _tick: (delta: number) => void
     duration: number
     playbackRate: number
@@ -51,6 +53,13 @@ export interface ITweenRex extends IObservable<number> {
      * Sets a label at a particular time.  Set to undefined to clear.
      */
     setLabel(name: string, time?: number): ITweenRex
+
+    add(tweens: ITweenRex | ITweenRex[], opts?: ITweenRexAddOptions): IAction
+}
+
+export interface ITweenRexAddOptions {
+  position?: number
+  sequence?: boolean
 }
 
 export interface IScrollOptions {

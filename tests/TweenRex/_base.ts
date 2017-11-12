@@ -1,7 +1,7 @@
 import { assert } from 'chai'
 import { TweenRex } from '../../src/TweenRex'
 
-describe('Tween()', () => {
+describe('TweenRex()', () => {
     it('publishes values to subscribers', () => {
         const obs = TweenRex({
             duration: 1000
@@ -61,4 +61,36 @@ describe('Tween()', () => {
         tween.seek(50)
         assert.equal(tween.currentTime, 50)
     })
+
+    it('allows configuration of multiple observers under a single subscription', () => {
+        const obs = TweenRex({ duration: 1000 })
+
+        let values: number[] = []
+
+        // prettier-ignore
+        obs.subscribe([
+          o => values.push(o),
+          o => values.push(o*o)
+        ])
+
+        obs.seek(500)
+        assert.deepEqual(values, [0.5, 0.25])
+    })
+
+    it('honors unsubscribing multiple observers', () => {
+      const obs = TweenRex({ duration: 1000 })
+
+      let values: number[] = []
+
+      // prettier-ignore
+      const unsubscribe = obs.subscribe([
+        o => values.push(o),
+        o => values.push(o*o)
+      ])
+
+      unsubscribe()
+
+      obs.seek(500)
+      assert.deepEqual(values, [])
+  })
 })

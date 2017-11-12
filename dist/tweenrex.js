@@ -16,6 +16,23 @@ function inherit(a, b) {
     return a;
 }
 
+function isString(val) {
+    return typeof val === 'string';
+}
+var isArray = Array.isArray;
+
+function addAll(target, subarray) {
+    target.push.apply(target, subarray);
+}
+function removeAll(target, subarray) {
+    for (var i = 0; i < subarray.length; i++) {
+        var index = target.indexOf(subarray[i]);
+        if (index !== -1) {
+            target.splice(index, 1);
+        }
+    }
+}
+
 function TRexObservable(input) {
     var self = (input || {});
     var next = self.next && self.next.bind(self);
@@ -53,17 +70,17 @@ TRexObservable.prototype = {
     subscribe: function (fn) {
         var self = this;
         var subs = self.subs;
-        if (self.onSubscribe) {
-            self.onSubscribe(fn);
+        if (!isArray(fn)) {
+            fn = [fn];
         }
-        subs.push(fn);
+        if (self.onSubscribe) {
+            self.onSubscribe();
+        }
+        addAll(subs, fn);
         return function () {
-            var index = subs.indexOf(fn);
-            if (index !== -1) {
-                subs.splice(index, 1);
-                if (self.onUnsubscribe) {
-                    self.onUnsubscribe(fn);
-                }
+            removeAll(subs, fn);
+            if (self.onUnsubscribe) {
+                self.onUnsubscribe();
             }
         };
     }
@@ -127,15 +144,16 @@ TyrannoScrollus.prototype = {
     }
 };
 
-function isString(val) {
-    return typeof val === 'string';
+function minMax(val, min, max) {
+    return val < min ? min : val > max ? max : val;
 }
 
 function TweenRex(options) {
+    options = options || {};
     var self = TRexObservable(newify(this, TweenRex));
     var frameSize = options.frameSize;
+    self._cursor = options.duration || 0;
     self._scheduler = options.scheduler || scheduler;
-    self.duration = options.duration;
     self.distinct = options.distinct !== false;
     self.currentTime = 0;
     self.playbackRate = 1;
@@ -148,6 +166,24 @@ function TweenRex(options) {
     return self;
 }
 TweenRex.prototype = {
+    get duration() {
+        var self = this;
+        var tweens = self._tweens;
+        var maxSize = self._cursor;
+        if (tweens) {
+            for (var i = 0, ilen = tweens.length; i < ilen; i++) {
+                var t = tweens[i];
+                var size = t.pos + t.tween.duration;
+                if (maxSize < size) {
+                    maxSize = size;
+                }
+            }
+        }
+        return maxSize;
+    },
+    set duration(value) {
+        this._cursor = value;
+    },
     get currentTime() {
         return this._time;
     },
@@ -157,9 +193,37 @@ TweenRex.prototype = {
     get isPlaying() {
         return !!this._sub;
     },
+    add: function (tweens, pos) {
+        var self = this;
+        if (!self._tweens) {
+            self._tweens = [];
+        }
+        var _tweens = self._tweens;
+        if (!isArray(tweens)) {
+            tweens = [tweens];
+        }
+        if (pos === _) {
+            pos = self.duration;
+        }
+        var ilen = tweens.length;
+        var tweenObjs = Array(ilen);
+        for (var i = 0; i < ilen; i++) {
+            var tween = tweens[i];
+            if (tween.isPlaying) {
+                tween.pause();
+            }
+            tween._scheduler = _;
+            tweenObjs[i] = { pos: pos, tween: tween };
+        }
+        addAll(_tweens, tweenObjs);
+        return function () {
+            removeAll(_tweens, tweenObjs);
+        };
+    },
     play: function () {
         var self = this;
-        if (!self.isPlaying) {
+        var scheduler$$1 = self._scheduler;
+        if (scheduler$$1 && !self.isPlaying) {
             var isForwards = self.playbackRate >= 0;
             var duration = self.duration;
             var n = self._time;
@@ -169,7 +233,7 @@ TweenRex.prototype = {
             else if (!isForwards && n <= 0) {
                 n = duration;
             }
-            self._sub = self._scheduler.subscribe(self._tick);
+            self._sub = scheduler$$1.subscribe(self._tick);
             self.seek(n);
         }
         return self;
@@ -198,6 +262,7 @@ TweenRex.prototype = {
         var self = this;
         var isForwards = self.playbackRate >= 0;
         var duration = self.duration;
+        var tweens = self._tweens;
         var c = isString(n) ? self.labels[n] : n;
         if (isForwards && c >= duration) {
             c = duration;
@@ -209,6 +274,16 @@ TweenRex.prototype = {
         }
         self._time = c;
         self.next(c / (duration || 1));
+        if (tweens) {
+            for (var i = 0, ilen = tweens.length; i < ilen; i++) {
+                var t = tweens[i];
+                var tween = t.tween;
+                var startPos = t.pos;
+                var endPos = startPos + tween.duration;
+                var offset = minMax((c - startPos) / (endPos - startPos), 0, 1);
+                tween.next(offset);
+            }
+        }
         return self;
     },
     getLabel: function (name) {

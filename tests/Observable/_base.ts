@@ -60,4 +60,17 @@ describe('Observable()', () => {
         obs.next(2)
         assert.deepEqual(values, [2, 2, 5, 5, 2, 2, 5, 5])
     })
+
+    it('allows configuration of multiple observers under a single subscription', () => {
+        const obs = TRexObservable<number>()
+
+        let values: number[] = []
+        obs.subscribe([
+          o => values.push(o),
+          o => values.push(o*o)
+        ])
+
+        obs.next(2)
+        assert.deepEqual(values, [2, 4])
+    })
 })
