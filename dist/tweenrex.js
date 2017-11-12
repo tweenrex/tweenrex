@@ -86,7 +86,7 @@ TRexObservable.prototype = {
     }
 };
 
-var onNextFrame = typeof window !== 'undefined'
+var onNextFrame = typeof requestAnimationFrame !== 'undefined'
     ? requestAnimationFrame
     : function (fn) { return setTimeout(function () { return fn(Date.now()); }, 1000 / 60); };
 
@@ -148,6 +148,10 @@ function minMax(val, min, max) {
     return val < min ? min : val > max ? max : val;
 }
 
+function coalesce(current, fallback) {
+    return current === _ ? fallback : current;
+}
+
 function TweenRex(options) {
     options = options || {};
     var self = TRexObservable(newify(this, TweenRex));
@@ -193,7 +197,7 @@ TweenRex.prototype = {
     get isPlaying() {
         return !!this._sub;
     },
-    add: function (tweens, pos) {
+    add: function (tweens, opts) {
         var self = this;
         if (!self._tweens) {
             self._tweens = [];
@@ -202,9 +206,10 @@ TweenRex.prototype = {
         if (!isArray(tweens)) {
             tweens = [tweens];
         }
-        if (pos === _) {
-            pos = self.duration;
-        }
+        opts = opts || {};
+        var pos = coalesce(opts.position, self.duration);
+        var seq = opts.sequence;
+        var stagger = opts.stagger;
         var ilen = tweens.length;
         var tweenObjs = Array(ilen);
         for (var i = 0; i < ilen; i++) {
@@ -214,6 +219,12 @@ TweenRex.prototype = {
             }
             tween._scheduler = _;
             tweenObjs[i] = { pos: pos, tween: tween };
+            if (seq) {
+                pos += tween.duration;
+            }
+            if (stagger) {
+                pos += stagger;
+            }
         }
         addAll(_tweens, tweenObjs);
         return function () {

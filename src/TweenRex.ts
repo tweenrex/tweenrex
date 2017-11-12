@@ -6,7 +6,7 @@ import { TRexObservable } from './Observable'
 import { scheduler } from './scheduler'
 import { addAll, removeAll } from './internal/arrays'
 import { minMax } from './internal/math'
-import { coalesce } from './internal/colesce';
+import { coalesce } from './internal/colesce'
 
 export function TweenRex(options?: ITweenOptions): ITweenRex {
     options = options || {}
@@ -75,6 +75,7 @@ TweenRex.prototype = {
 
         let pos = coalesce(opts.position, self.duration)
         const seq = opts.sequence
+        const stagger = opts.stagger
 
         // create position + tween objects
         const ilen = tweens.length
@@ -93,8 +94,11 @@ TweenRex.prototype = {
             tweenObjs[i] = { pos, tween }
 
             if (seq) {
-              // move the position if this is a sequence
-              pos += tween.duration
+                // move the position if this is a sequence
+                pos += tween.duration
+            }
+            if (stagger) {
+                pos += stagger
             }
         }
 

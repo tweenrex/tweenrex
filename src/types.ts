@@ -60,6 +60,7 @@ export interface ITweenRex extends IObservable<number> {
 export interface ITweenRexAddOptions {
   position?: number
   sequence?: boolean
+  stagger?: number
 }
 
 export interface IScrollOptions {
