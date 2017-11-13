@@ -97,7 +97,17 @@ function TyrannoScrollus(options) {
     var self = newify(this, TyrannoScrollus);
     self.target = resolveTarget(options.targets);
     self._timer = options.timer || defaultTimer;
-    self._tick = (options.direction === 'x' ? updateX : updateY).bind(self);
+    self.easing = options.easing;
+    self._tick = function () {
+        var target = self.target;
+        var value = self.direction === 'x'
+            ? target.scrollLeft / (target.scrollWidth - target.clientWidth)
+            : target.scrollTop / (target.scrollHeight - target.clientHeight);
+        if (self.easing) {
+            value = self.easing(value);
+        }
+        self.next(value);
+    };
     var obs = TRexObservable(options);
     self.dispose = function () {
         self.pause();
@@ -107,16 +117,6 @@ function TyrannoScrollus(options) {
     self.next = obs.next;
     self.subscribe = obs.subscribe;
     return self;
-}
-function updateX() {
-    var self = this;
-    var target = self.target;
-    self.next(target.scrollLeft / (target.scrollWidth - target.clientWidth));
-}
-function updateY() {
-    var self = this;
-    var target = self.target;
-    self.next(target.scrollTop / (target.scrollHeight - target.clientHeight));
 }
 TyrannoScrollus.prototype = {
     get isPlaying() {
@@ -159,11 +159,12 @@ function TweenRex(opts) {
     self._pos = options.duration || 0;
     self._time = 0;
     self.labels = options.labels || {};
+    self.easing = options.easing;
     self.playbackRate = 1;
-    var frameSize = options.frameSize;
-    self._tick = function (delta) {
-        var n = self._time + (frameSize || (delta - (self._last || delta)) * self.playbackRate);
-        self._last = delta;
+    self._tick = function (timestamp) {
+        var delta = (options.frameSize || (timestamp - (self._last || timestamp)) * self.playbackRate);
+        var n = self._time + delta;
+        self._last = timestamp;
         self.seek(n);
     };
     var obs = TRexObservable(options);
@@ -216,7 +217,7 @@ TweenRex.prototype = {
         tweens = toArray(tweens);
         var _tweens = self._tweens;
         opts = opts || {};
-        var pos = coalesce(opts.position, self.duration);
+        var pos = coalesce(isString(opts.position) ? self.labels[opts.position] : opts.position, self.duration);
         var seq = opts.sequence;
         var stagger = opts.stagger;
         var ilen = tweens.length;
@@ -293,15 +294,19 @@ TweenRex.prototype = {
             self.pause();
         }
         self._time = c;
-        self.next(c / (duration || 1));
+        var offset = c / (duration || 1);
+        if (self.easing) {
+            offset = self.easing(offset);
+        }
+        self.next(offset);
         if (tweens) {
             for (var i = 0, ilen = tweens.length; i < ilen; i++) {
                 var t = tweens[i];
                 var tween = t.tween;
                 var startPos = t.pos;
                 var endPos = startPos + (tween.duration || 1);
-                var offset = minMax((c - startPos) / (endPos - startPos), 0, 1);
-                tween.next(offset);
+                var offset_1 = minMax((c - startPos) / (endPos - startPos), 0, 1);
+                tween.next(offset_1);
             }
         }
         return self;

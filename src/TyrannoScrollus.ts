@@ -13,36 +13,40 @@ export function TyrannoScrollus(options: IScrollOptions): ITyrannoScrollus {
 
     self.target = resolveTarget(options.targets)
     self._timer = options.timer || defaultTimer
-    self._tick = (options.direction === 'x' ? updateX : updateY).bind(self)
+    self.easing = options.easing
+
+    self._tick = () => {
+        const target = self.target
+        // prettier-ignore
+        let value = self.direction === 'x'
+                ? target.scrollLeft / (target.scrollWidth - target.clientWidth)
+                : target.scrollTop / (target.scrollHeight - target.clientHeight)
+
+        // ease value if specified
+        if (self.easing) {
+            value = self.easing(value)
+        }
+
+        // publish next value
+        self.next(value)
+    }
 
     // copy next/subscribe to this object
     const obs = TRexObservable<number>(options)
     self.dispose = () => {
-      // pause timeline to clear active state
-      self.pause()
+        // pause timeline to clear active state
+        self.pause()
 
-      // clear state
-      self.target = _
+        // clear state
+        self.target = _
 
-       // dispose the observable
-      obs.dispose()
+        // dispose the observable
+        obs.dispose()
     }
     self.next = obs.next
     self.subscribe = obs.subscribe
 
     return self
-}
-
-function updateX(this: ITyrannoScrollus): void {
-    const self = this
-    const target = self.target
-    self.next(target.scrollLeft / (target.scrollWidth - target.clientWidth))
-}
-
-function updateY(this: ITyrannoScrollus): void {
-    const self = this
-    const target = self.target
-    self.next(target.scrollTop / (target.scrollHeight - target.clientHeight))
 }
 
 TyrannoScrollus.prototype = {

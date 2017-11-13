@@ -1,4 +1,4 @@
-import { ITweenOptions, ITweenRex, IAction, ITweenRexAddOptions } from './types'
+import { ITweenOptions, ITweenRex, ITweenRexAddOptions } from './types'
 import { _ } from './internal/constants'
 import { isString } from './internal/inspect'
 import { newify } from './internal/newify'
@@ -11,7 +11,7 @@ import { coalesce } from './internal/colesce'
 /**
  * Creates a TweenRex instance.  This allows tweening over a period of time with playback controls.
  */
-export function TweenRex(opts?: ITweenOptions | ITweenRex): ITweenRex {
+export function TweenRex(opts?: ITweenOptions | ITweenRex) {
     if (opts instanceof TweenRex) {
         return opts as ITweenRex
     }
@@ -24,13 +24,13 @@ export function TweenRex(opts?: ITweenOptions | ITweenRex): ITweenRex {
     self._pos = options.duration || 0
     self._time = 0
     self.labels = options.labels || {}
+    self.easing = options.easing
     self.playbackRate = 1
 
-    const frameSize = options.frameSize
-
-    self._tick = (delta: number) => {
-        const n = self._time + (frameSize || (delta - (self._last || delta)) * self.playbackRate)
-        self._last = delta
+    self._tick = timestamp => {
+        const delta = (options.frameSize || (timestamp - (self._last || timestamp)) * self.playbackRate)
+        const n = self._time + delta
+        self._last = timestamp
         self.seek(n)
     }
 
@@ -57,7 +57,7 @@ export function TweenRex(opts?: ITweenOptions | ITweenRex): ITweenRex {
 }
 
 TweenRex.prototype = {
-    get duration(this: ITweenRex): number {
+    get duration(this: ITweenRex) {
         const self = this
         const tweens = self._tweens
 
@@ -82,10 +82,10 @@ TweenRex.prototype = {
     set currentTime(this: ITweenRex, time: number) {
         this.seek(time)
     },
-    get isPlaying(this: ITweenRex): boolean {
+    get isPlaying(this: ITweenRex) {
         return !!this._sub
     },
-    add(this: ITweenRex, tweens: ITweenRex[], opts?: ITweenRexAddOptions): IAction {
+    add(this: ITweenRex, tweens: ITweenRex[], opts?: ITweenRexAddOptions) {
         const self = this
         if (!self._tweens) {
             self._tweens = []
@@ -139,7 +139,7 @@ TweenRex.prototype = {
             removeAll(_tweens, tweenObjs)
         }
     },
-    play(this: ITweenRex): ITweenRex {
+    play(this: ITweenRex) {
         const self = this
         const timer = self._timer
         if (timer && !self.isPlaying) {
@@ -158,14 +158,14 @@ TweenRex.prototype = {
         }
         return self
     },
-    restart(this: ITweenRex): ITweenRex {
+    restart(this: ITweenRex) {
         const self = this
         return self
             .pause()
             .seek(self.playbackRate >= 0 ? 0 : self.duration)
             .play()
     },
-    pause(this: ITweenRex): ITweenRex {
+    pause(this: ITweenRex) {
         const self = this
         const sub = self._sub
         if (sub) {
@@ -174,11 +174,11 @@ TweenRex.prototype = {
         }
         return self
     },
-    reverse(this: ITweenRex): ITweenRex {
+    reverse(this: ITweenRex) {
         this.playbackRate *= -1
         return this
     },
-    seek(this: ITweenRex, n: number | string): ITweenRex {
+    seek(this: ITweenRex, n: number | string) {
         const self = this
         const isForwards = self.playbackRate >= 0
         const duration = self.duration
@@ -196,7 +196,13 @@ TweenRex.prototype = {
         }
 
         self._time = c
-        self.next(c / (duration || 1))
+
+        let offset = c / (duration || 1)
+        if (self.easing) {
+          offset = self.easing(offset)
+        }
+
+        self.next(offset)
 
         // update sub-timelines
         if (tweens) {
@@ -213,10 +219,10 @@ TweenRex.prototype = {
 
         return self
     },
-    getLabel(this: ITweenRex, name: string): number {
+    getLabel(this: ITweenRex, name: string) {
         return this.labels[name]
     },
-    setLabel(this: ITweenRex, name: string, time?: number): ITweenRex {
+    setLabel(this: ITweenRex, name: string, time?: number) {
         this.labels[name] = time
         return this
     }

@@ -12,6 +12,10 @@ export interface IAction {
     (): void
 }
 
+export interface IEasing {
+    (o: number): number
+}
+
 /**
  * Single item or array of items
  */
@@ -52,21 +56,25 @@ export interface IObservableOptions<TValue> {
  */
 export interface ITweenOptions extends IObservableOptions<number> {
     /**
-     * Number of frames to lock the timer at.  Leave undefined to synchronize to real time.
-     */
-    frameSize?: number
-    /**
      * Initial duration of the tween
      */
     duration?: number
     /**
-     * This should typically not be set.  Timer to use for frame-rate and deltas.
+     * Easing function to apply to the whole Tween instance
      */
-    timer?: ITRexObservable<number>
+    easing?: IEasing
+    /**
+     * Number of frames to lock the timer at.  Leave undefined to synchronize to real time.
+     */
+    frameSize?: number
     /**
      * Dictionary of named times to use for seeking. Ex: .seek('middle')
      */
     labels?: Record<string, number>
+    /**
+     * This should typically not be set.  Timer to use for frame-rate and deltas.
+     */
+    timer?: ITRexObservable<number>
 }
 
 /**
@@ -98,6 +106,10 @@ export interface IScrollOptions extends IObservableOptions<number> {
      * The direction to observe. 'x' = horizontal; 'y' = vertical
      */
     direction?: 'x' | 'y'
+    /**
+     * Easing function to apply to the whole Tween instance
+     */
+    easing?: IEasing
     /**
      * Element to observe. Specify a CSS selector or an Element
      */
@@ -149,6 +161,10 @@ export interface ITweenRex extends ITRexObservable<number> {
      * If the tween contains sub-tweens, this will return either the value set or the length of the longest tween.
      */
     duration: number
+    /**
+     * Easing function to apply to the whole Tween instance
+     */
+    easing?: IEasing
     /**
      * The playback rate of the timeline.  By default this is set to 1 (100%).
      * Setting this to a negative value will play the timeline in reverse.
@@ -221,13 +237,17 @@ export interface ITyrannoScrollus extends ITRexObservable<number> {
     /** DO_NOT_USE: callback for the timer */
     _tick: () => void
     /**
+     * The direction to observe. 'x' = horizontal; 'y' = vertical
+     */
+    direction?: 'x' | 'y'
+    /**
+     * Easing function to apply to the whole Tween instance
+     */
+    easing?: IEasing
+    /**
      * Returns true if the scroll position is being observed.
      */
     isPlaying: boolean
-    /**
-     * The target being observed
-     */
-    target: Element
     /**
      * Listens to change in the scroll position. Has no effect if the target is being observed already.
      */
@@ -236,4 +256,8 @@ export interface ITyrannoScrollus extends ITRexObservable<number> {
      * Stops listening to changes in the scroll position.
      */
     pause(): void
+    /**
+     * The target being observed
+     */
+    target: Element
 }

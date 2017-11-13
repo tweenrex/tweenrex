@@ -103,6 +103,35 @@ describe('TweenRex()', () => {
         })
 
         tween.seek(250)
-        assert.deepEqual(values, [.5])
+        assert.deepEqual(values, [0.5])
     })
+
+    test('easing changes the rate of the animation', () => {
+        const values: number[] = []
+
+        const tween = TweenRex({
+            duration: 500,
+            easing: o => o * 2,
+            subscribe: o => values.push(o)
+        })
+
+        tween.seek(250)
+        assert.deepEqual(values, [1])
+    })
+
+    test('easing property is live', () => {
+      const values: number[] = []
+
+      const tween = TweenRex({
+          duration: 500,
+          easing: o => o * 2,
+          subscribe: o => values.push(o)
+      })
+
+      tween.seek(250)
+      tween.easing = o => o
+      tween.seek(250)
+
+      assert.deepEqual(values, [1, .5])
+  })
 })

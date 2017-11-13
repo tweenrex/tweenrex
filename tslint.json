@@ -104,7 +104,7 @@
             "allow-null-check"
         ],
         "typedef": [
-            true,
+            false,
             "call-signature",
             "parameter",
             "arrow-parameter",

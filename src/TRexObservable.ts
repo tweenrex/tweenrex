@@ -1,4 +1,4 @@
-import { IObserver, IAction, ITRexObservable, IObservableOptions } from './types'
+import { IObserver, ITRexObservable, IObservableOptions } from './types'
 import { removeAll, addAll, toArray } from './internal/arrays'
 import { noOperation } from './internal/noOperation'
 
@@ -18,12 +18,12 @@ export function TRexObservable<TValue>(options?: IObservableOptions<TValue>): IT
     let buffer: TValue[]
 
     return {
-        dispose(): void {
+        dispose() {
           // clear subscribers
           subs.length = 0
           onDispose()
         },
-        next(n: TValue): void {
+        next(n: TValue) {
             if (!buffer) {
                 buffer = []
             }
@@ -55,7 +55,7 @@ export function TRexObservable<TValue>(options?: IObservableOptions<TValue>): IT
             // call after next hook
             onNext(n, subs)
         },
-        subscribe(fn: IObserver<any>[]): IAction {
+        subscribe(fn: IObserver<any>[]) {
             fn = toArray(fn)
 
             onSubscribe(subs)

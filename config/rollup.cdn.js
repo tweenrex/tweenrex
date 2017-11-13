@@ -18,8 +18,7 @@ module.exports = {
       preserveConstEnums: false,
       removeComments: true,
       declaration: false,
-      typescript: require('typescript'),
-      noImplicitAny: true
+      typescript: require('typescript')
     }),
     nodeResolve({
       module: true,
