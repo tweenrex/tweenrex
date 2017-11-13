@@ -17,6 +17,25 @@ export interface IEasing {
 }
 
 /**
+ * Objects that are or resemble an HTML element
+ */
+export interface IElement {
+  tagName: string
+}
+
+/**
+ * Objects that have the necessary properties for scrolling
+ */
+export interface IScrollable extends IElement {
+  scrollHeight: number
+  scrollLeft: number
+  scrollTop: number
+  scrollWidth: number
+  clientWidth: number
+  clientHeight: number
+}
+
+/**
  * Single item or array of items
  */
 export type OneOrMany<T> = T | T[]
@@ -113,7 +132,7 @@ export interface IScrollOptions extends IObservableOptions<number> {
     /**
      * Element to observe. Specify a CSS selector or an Element
      */
-    targets: string | Element
+    targets: string | IScrollable
     /**
      * This should typically not be set.  Timer to use for checking for changes.
      */
@@ -259,5 +278,5 @@ export interface ITyrannoScrollus extends ITRexObservable<number> {
     /**
      * The target being observed
      */
-    target: Element
+    target: IScrollable
 }

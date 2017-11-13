@@ -1,4 +1,4 @@
-import { IScrollOptions, ITyrannoScrollus } from './types'
+import { IScrollOptions, ITyrannoScrollus, IScrollable } from './types'
 import { _ } from './internal/constants'
 import { newify } from './internal/newify'
 import { TRexObservable } from './TRexObservable'
@@ -11,9 +11,10 @@ import { resolveTarget } from './internal/resolveTarget'
 export function TyrannoScrollus(options: IScrollOptions): ITyrannoScrollus {
     const self = newify<ITyrannoScrollus>(this, TyrannoScrollus)
 
-    self.target = resolveTarget(options.targets)
+    self.target = (resolveTarget(options.targets) as any) as IScrollable
     self._timer = options.timer || defaultTimer
     self.easing = options.easing
+    self.direction = options.direction
 
     self._tick = () => {
         const target = self.target
@@ -33,6 +34,8 @@ export function TyrannoScrollus(options: IScrollOptions): ITyrannoScrollus {
 
     // copy next/subscribe to this object
     const obs = TRexObservable<number>(options)
+    self.next = obs.next
+    self.subscribe = obs.subscribe
     self.dispose = () => {
         // pause timeline to clear active state
         self.pause()
@@ -43,8 +46,6 @@ export function TyrannoScrollus(options: IScrollOptions): ITyrannoScrollus {
         // dispose the observable
         obs.dispose()
     }
-    self.next = obs.next
-    self.subscribe = obs.subscribe
 
     return self
 }
@@ -56,6 +57,7 @@ TyrannoScrollus.prototype = {
     play(this: ITyrannoScrollus): void {
         const self = this
         if (!self.isPlaying) {
+            self._tick()
             self._sub = self._timer.subscribe(self._tick)
         }
     },

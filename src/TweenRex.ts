@@ -153,8 +153,8 @@ TweenRex.prototype = {
                 n = duration
             }
 
-            self._sub = timer.subscribe(self._tick)
             self.seek(n)
+            self._sub = timer.subscribe(self._tick)
         }
         return self
     },

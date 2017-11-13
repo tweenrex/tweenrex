@@ -89,8 +89,12 @@ var defaultTimer = TRexObservable({
     }
 });
 
+function isString(val) {
+    return typeof val === 'string';
+}
+
 function resolveTarget(target) {
-    return target instanceof Element ? target : document.querySelector(target);
+    return isString(target.tagName) ? target : document.querySelector(target);
 }
 
 function TyrannoScrollus(options) {
@@ -98,6 +102,7 @@ function TyrannoScrollus(options) {
     self.target = resolveTarget(options.targets);
     self._timer = options.timer || defaultTimer;
     self.easing = options.easing;
+    self.direction = options.direction;
     self._tick = function () {
         var target = self.target;
         var value = self.direction === 'x'
@@ -109,13 +114,13 @@ function TyrannoScrollus(options) {
         self.next(value);
     };
     var obs = TRexObservable(options);
+    self.next = obs.next;
+    self.subscribe = obs.subscribe;
     self.dispose = function () {
         self.pause();
         self.target = _;
         obs.dispose();
     };
-    self.next = obs.next;
-    self.subscribe = obs.subscribe;
     return self;
 }
 TyrannoScrollus.prototype = {
@@ -125,6 +130,7 @@ TyrannoScrollus.prototype = {
     play: function () {
         var self = this;
         if (!self.isPlaying) {
+            self._tick();
             self._sub = self._timer.subscribe(self._tick);
         }
     },
@@ -136,10 +142,6 @@ TyrannoScrollus.prototype = {
         }
     }
 };
-
-function isString(val) {
-    return typeof val === 'string';
-}
 
 function minMax(val, min, max) {
     return val < min ? min : val > max ? max : val;
@@ -254,8 +256,8 @@ TweenRex.prototype = {
             else if (!isForwards && n <= 0) {
                 n = duration;
             }
-            self._sub = timer.subscribe(self._tick);
             self.seek(n);
+            self._sub = timer.subscribe(self._tick);
         }
         return self;
     },

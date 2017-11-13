@@ -1,3 +1,6 @@
-export function resolveTarget(target: string | Element): Element {
-  return target instanceof Element ? target : document.querySelector(target)
+import { isString } from "./inspect";
+import { IElement } from "../types";
+
+export function resolveTarget(target: any): IElement {
+  return isString(target.tagName) ? target : document.querySelector(target)
 }
