@@ -17,6 +17,7 @@
         "preserveConstEnums": false,
         "removeComments": true,
         "rootDir": "src",
+        "skipLibCheck": true,
         "sourceMap": false,
         "strictNullChecks": false,
         "suppressImplicitAnyIndexErrors": true,

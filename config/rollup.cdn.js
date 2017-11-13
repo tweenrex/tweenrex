@@ -12,7 +12,6 @@ module.exports = {
   },
   plugins: [
     typescript({
-      tsconfig: false,
       target: 'es5',
       rootDir: 'src',
       module: 'es2015',

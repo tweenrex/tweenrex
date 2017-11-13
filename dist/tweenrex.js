@@ -1,26 +1,6 @@
 (function () {
 'use strict';
 
-var _ = undefined;
-
-function newify(self, type) {
-    return self instanceof type ? self : Object.create(type.prototype);
-}
-
-function inherit(a, b) {
-    for (var k in b) {
-        if (a[k] === _) {
-            a[k] = b[k];
-        }
-    }
-    return a;
-}
-
-function isString(val) {
-    return typeof val === 'string';
-}
-var isArray = Array.isArray;
-
 function addAll(target, subarray) {
     target.push.apply(target, subarray);
 }
@@ -32,73 +12,79 @@ function removeAll(target, subarray) {
         }
     }
 }
+function toArray(t) {
+    return Array.isArray(t) ? t : [t];
+}
 
-function TRexObservable(input) {
-    var self = (input || {});
-    var next = self.next && self.next.bind(self);
-    var subs = (self.subs = []);
+var noOperation = function () { };
+
+function TRexObservable(options) {
+    options = options || {};
+    var distinct = options.distinct !== false;
+    var onNext = options.onNext || noOperation;
+    var onDispose = options.onDispose || noOperation;
+    var onSubscribe = options.onSubscribe || noOperation;
+    var onUnsubscribe = options.onUnsubscribe || noOperation;
+    var subs = toArray(options.subscribe || []);
     var c;
     var buffer;
-    self.next = function (n) {
-        if (!buffer) {
-            buffer = [];
-        }
-        buffer.push(n);
-        if (buffer.length > 1) {
-            return;
-        }
-        for (var h = 0; h < buffer.length; h++) {
-            var subs2 = subs.slice();
-            var n_1 = buffer[h];
-            if (self.distinct && n_1 === c) {
-                continue;
+    return {
+        dispose: function () {
+            subs.length = 0;
+            onDispose();
+        },
+        next: function (n) {
+            if (!buffer) {
+                buffer = [];
             }
-            c = n_1;
-            for (var i = 0; i < subs2.length; i++) {
-                subs2[i](n_1);
+            buffer.push(n);
+            if (buffer.length > 1) {
+                return;
             }
-        }
-        buffer.length = 0;
-        if (next) {
-            next(n);
+            for (var h = 0; h < buffer.length; h++) {
+                var subs2 = subs.slice();
+                var n_1 = buffer[h];
+                if (!distinct || n_1 !== c) {
+                    c = n_1;
+                    for (var i = 0; i < subs2.length; i++) {
+                        subs2[i](n_1);
+                    }
+                }
+            }
+            buffer.length = 0;
+            onNext(n, subs);
+        },
+        subscribe: function (fn) {
+            fn = toArray(fn);
+            onSubscribe(subs);
+            addAll(subs, fn);
+            return function () {
+                removeAll(subs, fn);
+                onUnsubscribe(subs);
+            };
         }
     };
-    inherit(self, TRexObservable.prototype);
-    return self;
 }
-TRexObservable.prototype = {
-    subscribe: function (fn) {
-        var self = this;
-        var subs = self.subs;
-        if (!isArray(fn)) {
-            fn = [fn];
-        }
-        if (self.onSubscribe) {
-            self.onSubscribe();
-        }
-        addAll(subs, fn);
-        return function () {
-            removeAll(subs, fn);
-            if (self.onUnsubscribe) {
-                self.onUnsubscribe();
-            }
-        };
-    }
-};
+
+var _ = undefined;
+
+function newify(self, type) {
+    return self instanceof type ? self : Object.create(type.prototype);
+}
 
 var onNextFrame = typeof requestAnimationFrame !== 'undefined'
     ? requestAnimationFrame
     : function (fn) { return setTimeout(function () { return fn(Date.now()); }, 1000 / 60); };
 
-var scheduler = TRexObservable({
-    onSubscribe: function () {
-        if (!this.subs.length) {
-            onNextFrame(this.next);
+var defaultTimer = TRexObservable({
+    onSubscribe: function (subs) {
+        if (!subs.length) {
+            onNextFrame(defaultTimer.next);
         }
     },
-    next: function () {
-        if (this.subs.length) {
-            onNextFrame(this.next);
+    onNext: function (value, subs) {
+        if (subs.length) {
+            onNextFrame(defaultTimer.next);
         }
     }
 });
@@ -108,11 +94,18 @@ function resolveTarget(target) {
 }
 
 function TyrannoScrollus(options) {
-    var self = TRexObservable(newify(this, TyrannoScrollus));
+    var self = newify(this, TyrannoScrollus);
     self.target = resolveTarget(options.targets);
-    self._scheduler = options.scheduler || scheduler;
-    self.distinct = options.distinct !== false;
-    self.tick = (options.direction === 'x' ? updateX : updateY).bind(self);
+    self._timer = options.timer || defaultTimer;
+    self._tick = (options.direction === 'x' ? updateX : updateY).bind(self);
+    var obs = TRexObservable(options);
+    self.dispose = function () {
+        self.pause();
+        self.target = _;
+        obs.dispose();
+    };
+    self.next = obs.next;
+    self.subscribe = obs.subscribe;
     return self;
 }
 function updateX() {
@@ -132,7 +125,7 @@ TyrannoScrollus.prototype = {
     play: function () {
         var self = this;
         if (!self.isPlaying) {
-            self._sub = self._scheduler.subscribe(self.tick);
+            self._sub = self._timer.subscribe(self._tick);
         }
     },
     pause: function () {
@@ -144,6 +137,10 @@ TyrannoScrollus.prototype = {
     }
 };
 
+function isString(val) {
+    return typeof val === 'string';
+}
+
 function minMax(val, min, max) {
     return val < min ? min : val > max ? max : val;
 }
@@ -152,28 +149,42 @@ function coalesce(current, fallback) {
     return current === _ ? fallback : current;
 }
 
-function TweenRex(options) {
-    options = options || {};
-    var self = TRexObservable(newify(this, TweenRex));
-    var frameSize = options.frameSize;
-    self._cursor = options.duration || 0;
-    self._scheduler = options.scheduler || scheduler;
-    self.distinct = options.distinct !== false;
-    self.currentTime = 0;
-    self.playbackRate = 1;
+function TweenRex(opts) {
+    if (opts instanceof TweenRex) {
+        return opts;
+    }
+    var options = (opts || {});
+    var self = newify(this, TweenRex);
+    self._timer = options.timer || defaultTimer;
+    self._pos = options.duration || 0;
+    self._time = 0;
     self.labels = options.labels || {};
+    self.playbackRate = 1;
+    var frameSize = options.frameSize;
     self._tick = function (delta) {
-        var n = self._time + (frameSize || (delta - (self._lastTime || delta)) * self.playbackRate);
-        self._lastTime = delta;
+        var n = self._time + (frameSize || (delta - (self._last || delta)) * self.playbackRate);
+        self._last = delta;
         self.seek(n);
     };
+    var obs = TRexObservable(options);
+    self.dispose = function () {
+        self.pause();
+        self._pos = 0;
+        self._time = 0;
+        self.playbackRate = 1;
+        self._tweens = _;
+        self.labels = {};
+        obs.dispose();
+    };
+    self.next = obs.next;
+    self.subscribe = obs.subscribe;
     return self;
 }
 TweenRex.prototype = {
     get duration() {
         var self = this;
         var tweens = self._tweens;
-        var maxSize = self._cursor;
+        var maxSize = self._pos;
         if (tweens) {
             for (var i = 0, ilen = tweens.length; i < ilen; i++) {
                 var t = tweens[i];
@@ -186,7 +197,7 @@ TweenRex.prototype = {
         return maxSize;
     },
     set duration(value) {
-        this._cursor = value;
+        this._pos = value;
     },
     get currentTime() {
         return this._time;
@@ -202,10 +213,8 @@ TweenRex.prototype = {
         if (!self._tweens) {
             self._tweens = [];
         }
+        tweens = toArray(tweens);
         var _tweens = self._tweens;
-        if (!isArray(tweens)) {
-            tweens = [tweens];
-        }
         opts = opts || {};
         var pos = coalesce(opts.position, self.duration);
         var seq = opts.sequence;
@@ -213,11 +222,11 @@ TweenRex.prototype = {
         var ilen = tweens.length;
         var tweenObjs = Array(ilen);
         for (var i = 0; i < ilen; i++) {
-            var tween = tweens[i];
+            var tween = TweenRex(tweens[i]);
             if (tween.isPlaying) {
                 tween.pause();
             }
-            tween._scheduler = _;
+            tween._timer = _;
             tweenObjs[i] = { pos: pos, tween: tween };
             if (seq) {
                 pos += tween.duration;
@@ -233,8 +242,8 @@ TweenRex.prototype = {
     },
     play: function () {
         var self = this;
-        var scheduler$$1 = self._scheduler;
-        if (scheduler$$1 && !self.isPlaying) {
+        var timer = self._timer;
+        if (timer && !self.isPlaying) {
             var isForwards = self.playbackRate >= 0;
             var duration = self.duration;
             var n = self._time;
@@ -244,7 +253,7 @@ TweenRex.prototype = {
             else if (!isForwards && n <= 0) {
                 n = duration;
             }
-            self._sub = scheduler$$1.subscribe(self._tick);
+            self._sub = timer.subscribe(self._tick);
             self.seek(n);
         }
         return self;
@@ -261,7 +270,7 @@ TweenRex.prototype = {
         var sub = self._sub;
         if (sub) {
             sub();
-            self._sub = self._lastTime = _;
+            self._sub = self._last = _;
         }
         return self;
     },
@@ -290,7 +299,7 @@ TweenRex.prototype = {
                 var t = tweens[i];
                 var tween = t.tween;
                 var startPos = t.pos;
-                var endPos = startPos + tween.duration;
+                var endPos = startPos + (tween.duration || 1);
                 var offset = minMax((c - startPos) / (endPos - startPos), 0, 1);
                 tween.next(offset);
             }
@@ -306,7 +315,17 @@ TweenRex.prototype = {
     }
 };
 
+function inherit(a, b) {
+    for (var k in b) {
+        if (a[k] === _) {
+            a[k] = b[k];
+        }
+    }
+    return a;
+}
+
 inherit(window, {
+    TRexObservable: TRexObservable,
     TyrannoScrollus: TyrannoScrollus,
     TweenRex: TweenRex
 });

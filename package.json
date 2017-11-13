@@ -6,6 +6,7 @@
     "description": "Reactive Tweening Engine",
     "devDependencies": {
         "@types/chai": "^4.0.4",
+        "@types/jest": "^21.1.6",
         "@types/node": "^8.0.45",
         "chai": "^4.1.2",
         "del-cli": "^1.1.0",

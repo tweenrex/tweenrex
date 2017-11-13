@@ -15,12 +15,14 @@
         "noUnusedLocals": true,        
         "preserveConstEnums": false,
         "removeComments": false,
+        "skipLibCheck": true,
         "sourceMap": false, 
         "suppressImplicitAnyIndexErrors": true,
         "target": "es5"
     },
     "exclude": [
         "dist",
+        "tests",
         "lib",
         "lib.es2015",
         "node_modules",

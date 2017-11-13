@@ -1,3 +1,5 @@
+import { OneOrMany } from "../types";
+
 export function addAll<T>(target: T[], subarray: T[]): void {
   target.push.apply(target, subarray)
 }
@@ -9,4 +11,8 @@ export function removeAll<T>(target: T[], subarray: T[]): void {
           target.splice(index, 1)
       }
   }
+}
+
+export function toArray<T>(t: OneOrMany<T>): T[] {
+  return Array.isArray(t) ? t as T[] : [t as T]
 }

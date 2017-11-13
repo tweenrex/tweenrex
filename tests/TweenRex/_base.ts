@@ -62,38 +62,47 @@ describe('TweenRex()', () => {
         assert.equal(tween.currentTime, 50)
     })
 
-    test(
-        'allows configuration of multiple observers under a single subscription',
-        () => {
-            const obs = TweenRex({ duration: 1000 })
+    test('allows configuration of multiple observers under a single subscription', () => {
+        const obs = TweenRex({ duration: 1000 })
 
-            let values: number[] = []
+        let values: number[] = []
 
-            // prettier-ignore
-            obs.subscribe([
+        // prettier-ignore
+        obs.subscribe([
               o => values.push(o),
               o => values.push(o*o)
             ])
 
-            obs.seek(500)
-            assert.deepEqual(values, [0.5, 0.25])
-        }
-    )
+        obs.seek(500)
+        assert.deepEqual(values, [0.5, 0.25])
+    })
 
     test('honors unsubscribing multiple observers', () => {
-      const obs = TweenRex({ duration: 1000 })
+        const obs = TweenRex({ duration: 1000 })
 
-      let values: number[] = []
+        let values: number[] = []
 
-      // prettier-ignore
-      const unsubscribe = obs.subscribe([
+        // prettier-ignore
+        const unsubscribe = obs.subscribe([
         o => values.push(o),
         o => values.push(o*o)
       ])
 
-      unsubscribe()
+        unsubscribe()
 
-      obs.seek(500)
-      assert.deepEqual(values, [])
-  })
+        obs.seek(500)
+        assert.deepEqual(values, [])
+    })
+
+    test('a subscription is automatically added to TweenRex', () => {
+        const values: number[] = []
+
+        const tween = TweenRex({
+            duration: 500,
+            subscribe: o => values.push(o)
+        })
+
+        tween.seek(250)
+        assert.deepEqual(values, [.5])
+    })
 })

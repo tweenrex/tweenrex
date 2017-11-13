@@ -92,4 +92,48 @@ describe('TweenRex.add()', () => {
 
         assert.equal(timeline.duration, 1500)
     })
+
+    test('options passed to add are automatically converted to TweenRex', () => {
+        const values: number[] = []
+
+        const timeline = TweenRex()
+        timeline.add({
+            duration: 500
+        })
+
+        timeline.seek(250)
+
+        assert.deepEqual(timeline.duration, 500)
+    })
+
+    test('a subscription is automatically added to TweenRex', () => {
+        const values: number[] = []
+
+        const timeline = TweenRex()
+        timeline.add({
+            duration: 500,
+            subscribe: o => values.push(o)
+        })
+
+        timeline.seek(250)
+
+        assert.deepEqual(values, [.5])
+    })
+
+    test('subscriptions are automatically added to TweenRex', () => {
+      const values: number[] = []
+
+      const timeline = TweenRex()
+      timeline.add({
+          duration: 500,
+          subscribe: [
+            o => values.push(o),
+            o => values.push(o*2)
+          ]
+      })
+
+      timeline.seek(250)
+
+      assert.deepEqual(values, [.5, 1])
+  })
 })

@@ -1,31 +1,57 @@
 import { ITweenOptions, ITweenRex, IAction, ITweenRexAddOptions } from './types'
 import { _ } from './internal/constants'
-import { isString, isArray } from './internal/inspect'
+import { isString } from './internal/inspect'
 import { newify } from './internal/newify'
-import { TRexObservable } from './Observable'
-import { scheduler } from './scheduler'
-import { addAll, removeAll } from './internal/arrays'
+import { TRexObservable } from './TRexObservable'
+import { defaultTimer } from './internal/defaultTimer'
+import { addAll, removeAll, toArray } from './internal/arrays'
 import { minMax } from './internal/math'
 import { coalesce } from './internal/colesce'
 
-export function TweenRex(options?: ITweenOptions): ITweenRex {
-    options = options || {}
+/**
+ * Creates a TweenRex instance.  This allows tweening over a period of time with playback controls.
+ */
+export function TweenRex(opts?: ITweenOptions | ITweenRex): ITweenRex {
+    if (opts instanceof TweenRex) {
+        return opts as ITweenRex
+    }
+
+    const options = (opts || {}) as ITweenOptions
 
     // create and extend instance
-    const self = TRexObservable<number, ITweenRex>(newify(this, TweenRex))
-    const frameSize = options.frameSize
-    self._cursor = options.duration || 0
-    self._scheduler = options.scheduler || scheduler
-    self.distinct = options.distinct !== false
-    self.currentTime = 0
-    self.playbackRate = 1
+    const self = newify<ITweenRex>(this, TweenRex)
+    self._timer = options.timer || defaultTimer
+    self._pos = options.duration || 0
+    self._time = 0
     self.labels = options.labels || {}
+    self.playbackRate = 1
+
+    const frameSize = options.frameSize
 
     self._tick = (delta: number) => {
-        const n = self._time + (frameSize || (delta - (self._lastTime || delta)) * self.playbackRate)
-        self._lastTime = delta
+        const n = self._time + (frameSize || (delta - (self._last || delta)) * self.playbackRate)
+        self._last = delta
         self.seek(n)
     }
+
+    // copy next/subscribe to this object
+    const obs = TRexObservable<number>(options)
+    self.dispose = () => {
+        // pause timeline to clear active state
+        self.pause()
+
+        // reset internal state
+        self._pos = 0
+        self._time = 0
+        self.playbackRate = 1
+        self._tweens = _
+        self.labels = {}
+
+        // dispose the observable
+        obs.dispose()
+    }
+    self.next = obs.next
+    self.subscribe = obs.subscribe
 
     return self
 }
@@ -35,7 +61,7 @@ TweenRex.prototype = {
         const self = this
         const tweens = self._tweens
 
-        let maxSize = self._cursor
+        let maxSize = self._pos
         if (tweens) {
             for (let i = 0, ilen = tweens.length; i < ilen; i++) {
                 const t = tweens[i]
@@ -48,7 +74,7 @@ TweenRex.prototype = {
         return maxSize
     },
     set duration(this: ITweenRex, value: number) {
-        this._cursor = value
+        this._pos = value
     },
     get currentTime(this: ITweenRex): number {
         return this._time
@@ -65,10 +91,8 @@ TweenRex.prototype = {
             self._tweens = []
         }
 
+        tweens = toArray(tweens)
         const _tweens = self._tweens
-        if (!isArray(tweens)) {
-            tweens = [tweens]
-        }
 
         // set option defaults
         opts = opts || {}
@@ -81,14 +105,15 @@ TweenRex.prototype = {
         const ilen = tweens.length
         const tweenObjs: typeof _tweens = Array(ilen)
         for (let i = 0; i < ilen; i++) {
-            const tween = tweens[i]
+            // wrap in TweenRex to ensure it is a TweenRex instance
+            const tween = TweenRex(tweens[i])
 
             // tell tween to stop current playing
             if (tween.isPlaying) {
                 tween.pause()
             }
-            // unhook tween from global scheduler
-            tween._scheduler = _
+            // unhook tween from timer
+            tween._timer = _
 
             // add to list of tweens
             tweenObjs[i] = { pos, tween }
@@ -112,8 +137,8 @@ TweenRex.prototype = {
     },
     play(this: ITweenRex): ITweenRex {
         const self = this
-        const scheduler = self._scheduler
-        if (scheduler && !self.isPlaying) {
+        const timer = self._timer
+        if (timer && !self.isPlaying) {
             const isForwards = self.playbackRate >= 0
             const duration = self.duration
 
@@ -124,7 +149,7 @@ TweenRex.prototype = {
                 n = duration
             }
 
-            self._sub = scheduler.subscribe(self._tick)
+            self._sub = timer.subscribe(self._tick)
             self.seek(n)
         }
         return self
@@ -141,7 +166,7 @@ TweenRex.prototype = {
         const sub = self._sub
         if (sub) {
             sub()
-            self._sub = self._lastTime = _
+            self._sub = self._last = _
         }
         return self
     },
@@ -176,7 +201,7 @@ TweenRex.prototype = {
                 const t = tweens[i]
                 const tween = t.tween
                 const startPos = t.pos
-                const endPos = startPos + tween.duration
+                const endPos = startPos + (tween.duration || 1)
                 const offset = minMax((c - startPos) / (endPos - startPos), 0, 1)
                 tween.next(offset)
             }

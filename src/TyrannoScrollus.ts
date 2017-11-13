@@ -1,16 +1,35 @@
 import { IScrollOptions, ITyrannoScrollus } from './types'
 import { _ } from './internal/constants'
 import { newify } from './internal/newify'
-import { TRexObservable } from './Observable'
-import { scheduler } from './scheduler'
-import { resolveTarget } from './internal/resolveTarget';
+import { TRexObservable } from './TRexObservable'
+import { defaultTimer } from './internal/defaultTimer'
+import { resolveTarget } from './internal/resolveTarget'
 
+/**
+ * Creates a TyrannoScrollus instance.  This allows tweening based on changes to the x or y scroll position of an element.
+ */
 export function TyrannoScrollus(options: IScrollOptions): ITyrannoScrollus {
-    const self = TRexObservable<number, ITyrannoScrollus>(newify(this, TyrannoScrollus))
+    const self = newify<ITyrannoScrollus>(this, TyrannoScrollus)
+
     self.target = resolveTarget(options.targets)
-    self._scheduler = options.scheduler || scheduler
-    self.distinct = options.distinct !== false;
-    self.tick = (options.direction === 'x' ? updateX : updateY).bind(self)
+    self._timer = options.timer || defaultTimer
+    self._tick = (options.direction === 'x' ? updateX : updateY).bind(self)
+
+    // copy next/subscribe to this object
+    const obs = TRexObservable<number>(options)
+    self.dispose = () => {
+      // pause timeline to clear active state
+      self.pause()
+
+      // clear state
+      self.target = _
+
+       // dispose the observable
+      obs.dispose()
+    }
+    self.next = obs.next
+    self.subscribe = obs.subscribe
+
     return self
 }
 
@@ -33,7 +52,7 @@ TyrannoScrollus.prototype = {
     play(this: ITyrannoScrollus): void {
         const self = this
         if (!self.isPlaying) {
-            self._sub = self._scheduler.subscribe(self.tick)
+            self._sub = self._timer.subscribe(self._tick)
         }
     },
     pause(this: ITyrannoScrollus): void {
