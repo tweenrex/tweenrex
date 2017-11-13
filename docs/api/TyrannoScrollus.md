@@ -26,6 +26,7 @@ Name | Description |
 --- | --- |
 distinct | When true, subsequent values will be ignored if they are the same as the previous value.  The default is true. |
 direction| The axis to observe.  'x' detects scrolling horizontally and 'y' detects scrolling vertically.  'y' is the default.|
+easing | Eases subscribe by a function. |
 onDispose| Triggered by calling dispose() |
 onNext| Triggered by calling next() |
 onSubscribe| Triggered by calling subscribe() |
@@ -37,6 +38,7 @@ timer | The observable that provides new time deltas.  If ```undefined```, it wi
 ## Properties
 Name | Description |
 --- | --- |
+easing | Eases subscribe by a function. |
 isPlaying | If true, the target is being watched |
 target | The active target being watched |
 

@@ -31,6 +31,7 @@ Name | Description |
 --- | --- |
 distinct | When true, subsequent values will be ignored if they are the same as the previous value.  The default is true. |
 duration | The duration of the tween in milliseconds |
+easing | Eases subscribe by a function. |
 frameSize | Enforces a fixed amount of time per frame.  If ```0```, Tweens will use actual deltas and attempt to sync to requestAnimationFrame.  The default value is ```0```. |
 labels | A dictionary of named times used for seeking |
 onDispose| Triggered by calling dispose() |
@@ -45,6 +46,7 @@ Name | Description |
 --- | --- |
 currentTime | The current time of the Tween |
 duration | The total duration of the Tween |
+easing | Eases subscribe by a function. |
 isPlaying | If true, TweenRex is actively playing |
 labels | A dictionary of named times used for seeking |
 playbackRate | The rate at which the Tween is playing. The default value is 1 meaning 100% speed. |
