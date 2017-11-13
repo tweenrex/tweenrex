@@ -125,4 +125,74 @@ Seeks to the time or label.  If the resolved time is not within the range of the
 
 ### add(tweens, options?)
 
-// todo
+#### Usage
+The ```add()``` function allows a TweenRex to become a timeline for other instances.  The first argument, ```tweens``` can either be a TweenRex instance or an array of TweenRex instances.   If the argument is not a TweenRex instance, it will be used as options to create one. For this reason, the folllowing pieces of code are equivalent:
+
+*With TweenRex instances*
+```js
+// create timeline
+const timeline = TweenRex()
+
+// add two tweens. The max time is extended to 1000
+timeline.add([
+    TweenRex({
+        duration: 500,
+        subscribe: o => ...
+    }),
+    TweenRex({
+        duration: 1000,
+        subscribe: o => ...
+    })
+])
+
+// add an additional tween 750ms past the time and store the subscription
+const sub = timeline.add(TweenRex({
+    duration: 750,
+    subscribe: o => ...
+}))
+
+...
+
+// remove the 750ms tween from the timeline
+sub()
+```
+
+*With TweenRex omitted*
+```js
+// create timeline
+const timeline = TweenRex()
+
+// add two tweens. The max time is extended to 1000
+timeline.add([
+    {
+        duration: 500,
+        subscribe: o => ...
+    },
+    {
+        duration: 1000,
+        subscribe: o => ...
+    }
+])
+
+// add an additional tween 750ms past the time and store the subscription
+const sub = timeline.add({
+    duration: 750,
+    subscribe: o => ...
+})
+
+...
+
+// remove the 750ms tween from the timeline
+sub()
+```
+
+When a TweenRex becomes a timeline, it automatically uses the last position as the duration so that all tweens fit inside of it.  The timeline will also shrink when sub-tweens are removed.  This shrinking can be prevented by setting the duration property of the timeline explicitly.
+
+#### Options
+
+Name | Description |
+--- | --- |
+position | Time or label at which to start these sub-tweens. Leave unset or undefined to use the last known position (duration) of the array |
+sequence | True if the array of tweens should be treated as a sequence. False if the array of tweens should be treated as a group tween.  Default value is false. |
+stagger | Number of additional milliseconds to add to each subsequent item.  With sequence = false, this creates an offset between each item that is visually appealing.  With sequence = true, you can use a negative number here to overlap items in the sequence. |
+

@@ -77,7 +77,7 @@ export interface ITweenRexAddOptions extends IObservableOptions<number> {
      * Position at which to set these sub-tweens. Leave unset or undefined to use the last known position (duration)
      * of the array
      */
-    position?: number
+    position?: number | string
     /**
      * True if the array of tweens should be treated as a sequence.  Default value is false.
      */

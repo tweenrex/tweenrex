@@ -117,23 +117,38 @@ describe('TweenRex.add()', () => {
 
         timeline.seek(250)
 
-        assert.deepEqual(values, [.5])
+        assert.deepEqual(values, [0.5])
     })
 
     test('subscriptions are automatically added to TweenRex', () => {
-      const values: number[] = []
+        const values: number[] = []
 
-      const timeline = TweenRex()
-      timeline.add({
-          duration: 500,
-          subscribe: [
-            o => values.push(o),
-            o => values.push(o*2)
-          ]
-      })
+        const timeline = TweenRex()
+        timeline.add({
+            duration: 500,
+            subscribe: [o => values.push(o), o => values.push(o * 2)]
+        })
 
-      timeline.seek(250)
+        timeline.seek(250)
 
-      assert.deepEqual(values, [.5, 1])
-  })
+        assert.deepEqual(values, [0.5, 1])
+    })
+
+    test('position can be set to a label name', () => {
+        const timeline = TweenRex({
+            labels: {
+                middle: 250
+            }
+        })
+        timeline.add(
+            {
+                duration: 500
+            },
+            {
+                position: 'middle'
+            }
+        )
+
+        assert.equal(timeline.duration, 750)
+    })
 })

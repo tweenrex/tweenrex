@@ -97,7 +97,11 @@ TweenRex.prototype = {
         // set option defaults
         opts = opts || {}
 
-        let pos = coalesce(opts.position, self.duration)
+        let pos = coalesce(
+            isString(opts.position) ? self.labels[opts.position] : opts.position as number,
+            self.duration
+        )
+
         const seq = opts.sequence
         const stagger = opts.stagger
 
