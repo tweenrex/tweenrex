@@ -45,7 +45,7 @@ target | The active target being watched |
 ## Player Controls
 
 ### play()
-Starts watching for changes in the scroll position
+Starts watching for changes in the scroll position.  If not already playing, TyrannoScrollus will publish the first value in the same frame.
 ### pause()
 Stops watching for changes in the scroll position
 
