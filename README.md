@@ -2,12 +2,13 @@
 
 *Reactive Tweening Engine*
 
+<img width="100%" src="docs/assets/wrex-banner.jpg"  />
+
 [![npm version](https://badge.fury.io/js/tweenrex.svg)](https://badge.fury.io/js/tweenrex)
 [![Build Status](https://travis-ci.org/notoriousb1t/tweenrex.svg?branch=master)](https://travis-ci.org/notoriousb1t/tweenrex)
 [![Downloads](https://img.shields.io/npm/dm/tweenrex.svg)](https://www.npmjs.com/package/tweenrex)
 [![gzip size](http://img.badgesize.io/https://unpkg.com/tweenrex/dist/tweenrex.min.js?compression=gzip&label=gzip%20size&style=flat&cache=false)](https://unpkg.com/tweenrex/dist/tweenrex.min.js)
 
-<img width="100%" src="docs/assets/wrex-banner.jpg"  />
 
 ## Features
 
