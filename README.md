@@ -61,10 +61,10 @@ Include this script.  It will add TweenRex, TyrannoScrollus, and TRexObservable 
 
 Run this command to install from npm, and then import from the module
 ```bash
-npm install tweenrex --save
+npm install @tweenrex/core --save
 ```
 ```js
-import { TweenRex, TyrannoScrollus, TRexObservable } from 'tweenrex'
+import { TweenRex, TyrannoScrollus, TRexObservable } from '@tweenrex/core'
 ```
 
 ## Recommended Helper Libraries

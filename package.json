@@ -1,7 +1,7 @@
 {
     "author": "Christopher Wallis <christopher.j.wallis@gmail.com> (http://notoriousb1t.com)",
     "bugs": {
-        "url": "https://github.com/notoriousb1t/tweenrex/issues"
+        "url": "https://github.com/tweenrex/tweenrex/issues"
     },
     "description": "Reactive Tweening Engine",
     "devDependencies": {
@@ -30,14 +30,14 @@
         "testRegex": "tests/.*/.*\\.ts$"
     },
     "jsnext:main": "./lib.es2015/index.js",
-    "homepage": "https://github.com/notoriousb1t/tweenrex#readme",
+    "homepage": "https://github.com/tweenrex/tweenrex#readme",
     "license": "MIT",
     "main": "./lib/index.js",
     "module": "./lib.es2015/index.js",
-    "name": "tweenrex",
+    "name": "@tweenrex/core",
     "repository": {
         "type": "git",
-        "url": "https://github.com/notoriousb1t/tweenrex"
+        "url": "https://github.com/tweenrex/tweenrex"
     },
     "types": "./types/index",
     "typings": "./types/index",
