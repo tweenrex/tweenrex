@@ -24,19 +24,15 @@
 - [Check your Heart with TweenRex + Polymorph](https://codepen.io/notoriousb1t/pen/dZveGQ?editors=1010)
 
 - [Dinos Unite! (Sub-tweens with TweenRex)](https://codepen.io/notoriousb1t/pen/zPwqVY?editors=0010)
-- [Syncing Horizontal Scroll with TweenRex](https://codepen.io/notoriousb1t/pen/0c5c1b7697377d12019ca4f091e2e669)
+- [Syncing Horizontal Scroll with TweenRex](https://codepen.io/shshaw/pen/jaLqBB)
 
-<table>
-<colgroup>
-    <col width="58%" />
-    <col width="42%" />
-</colgroup>
+<table width="100%">
 <tr>
-<td>
-    <img width="100%" src="docs/assets/TyrannoScrollus.gif"  />
+<td width="50%">
+    <a href="https://codepen.io/shshaw/pen/jaLqBB?editors=0010"><img width="100%" src="docs/assets/TyrannoScrollus.gif" /></a>
 </td>
-<td>
-    <img width="1000%" src="docs/assets/dinos_unite.gif" />
+<td width="50%">
+ <a href="https://codepen.io/notoriousb1t/pen/zPwqVY?editors=0010"><img width="100%" src="docs/assets/dinos_unite.gif" /></a>
 </td>
 </tr>
 </table>
