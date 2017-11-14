@@ -29,12 +29,18 @@
 <table width="100%">
 <tr>
 <td width="50%">
-  <a href="https://codepen.io/notoriousb1t/pen/zPwqVY?editors=0010"><img width="100%" src="docs/assets/DinosUnite.gif" /></a>
-  [Dinos Unite! (Sub-tweens with TweenRex)](https://codepen.io/shshaw/pen/mqMRbE)
+  <a href="https://codepen.io/shshaw/pen/mqMRbE">
+   <img width="100%" src="docs/assets/DinosUnite.gif" />
+   <br />
+   Dinos Unite! (Sub-tweens with TweenRex)
+ </a>
 </td>
 <td width="50%">
-  <a href="https://codepen.io/shshaw/pen/jaLqBB?editors=0010"><img width="100%" src="docs/assets/TyrannoScrollus.gif" /></a>
-  [Syncing Horizontal Scroll with TweenRex](https://codepen.io/shshaw/pen/jaLqBB)
+  <a href="https://codepen.io/shshaw/pen/jaLqBB?editors=0010">
+   <img width="100%" src="docs/assets/TyrannoScrollus.gif" />
+   <br />
+   Syncing Horizontal Scroll with TweenRex
+  </a>
 </td>
 </tr>
 </table>
