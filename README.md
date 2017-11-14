@@ -23,16 +23,18 @@
 ## Demos
 - [Check your Heart with TweenRex + Polymorph](https://codepen.io/notoriousb1t/pen/dZveGQ?editors=1010)
 
-- [Dinos Unite! (Sub-tweens with TweenRex)](https://codepen.io/notoriousb1t/pen/zPwqVY?editors=0010)
+- [Dinos Unite! (Sub-tweens with TweenRex)](https://codepen.io/shshaw/pen/mqMRbE)
 - [Syncing Horizontal Scroll with TweenRex](https://codepen.io/shshaw/pen/jaLqBB)
 
 <table width="100%">
 <tr>
 <td width="50%">
-    <a href="https://codepen.io/shshaw/pen/jaLqBB?editors=0010"><img width="100%" src="docs/assets/TyrannoScrollus.gif" /></a>
+  <a href="https://codepen.io/notoriousb1t/pen/zPwqVY?editors=0010"><img width="100%" src="docs/assets/DinosUnite.gif" /></a>
+  [Dinos Unite! (Sub-tweens with TweenRex)](https://codepen.io/shshaw/pen/mqMRbE)
 </td>
 <td width="50%">
- <a href="https://codepen.io/notoriousb1t/pen/zPwqVY?editors=0010"><img width="100%" src="docs/assets/dinos_unite.gif" /></a>
+  <a href="https://codepen.io/shshaw/pen/jaLqBB?editors=0010"><img width="100%" src="docs/assets/TyrannoScrollus.gif" /></a>
+  [Syncing Horizontal Scroll with TweenRex](https://codepen.io/shshaw/pen/jaLqBB)
 </td>
 </tr>
 </table>
