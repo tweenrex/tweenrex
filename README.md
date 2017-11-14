@@ -7,6 +7,8 @@
 [![Downloads](https://img.shields.io/npm/dm/tweenrex.svg)](https://www.npmjs.com/package/tweenrex)
 [![gzip size](http://img.badgesize.io/https://unpkg.com/tweenrex/dist/tweenrex.min.js?compression=gzip&label=gzip%20size&style=flat&cache=false)](https://unpkg.com/tweenrex/dist/tweenrex.min.js)
 
+<img width="100%" src="docs/assets/wrex-banner.jpg"  />
+
 ## Features
 
  - Playback controls: play, pause, reverse, playbackRate, seek, labels, etc.
@@ -15,6 +17,13 @@
  - Simple Reactive API with no strings attached
  - Super tiny with plans to stay that way
  - Free for commercial and non-commerical use under the MIT license
+
+
+## Demos
+- [Check your Heart with TweenRex + Polymorph](https://codepen.io/notoriousb1t/pen/dZveGQ?editors=1010)
+
+- [Dinos Unite! (Sub-tweens with TweenRex)](https://codepen.io/notoriousb1t/pen/zPwqVY?editors=0010)
+- [Syncing Horizontal Scroll with TweenRex](https://codepen.io/notoriousb1t/pen/0c5c1b7697377d12019ca4f091e2e669)
 
 <table>
 <colgroup>
@@ -30,14 +39,6 @@
 </td>
 </tr>
 </table>
-
-
-## Demos
-- [Check your Heart with TweenRex + Polymorph](https://codepen.io/notoriousb1t/pen/dZveGQ?editors=1010)
-
-- [Dinos Unite! (Sub-tweens with TweenRex)](https://codepen.io/notoriousb1t/pen/zPwqVY?editors=0010)
-- [Syncing Horizontal Scroll with TweenRex](https://codepen.io/notoriousb1t/pen/0c5c1b7697377d12019ca4f091e2e669)
-
 
 ## Documentation
 
