@@ -4,12 +4,6 @@
 
 <img width="100%" src="docs/assets/tweenrex-banner.png"  />
 
-[![npm version](https://badge.fury.io/js/tweenrex.svg)](https://badge.fury.io/js/tweenrex)
-[![Build Status](https://travis-ci.org/notoriousb1t/tweenrex.svg?branch=master)](https://travis-ci.org/notoriousb1t/tweenrex)
-[![Downloads](https://img.shields.io/npm/dm/tweenrex.svg)](https://www.npmjs.com/package/tweenrex)
-[![gzip size](http://img.badgesize.io/https://unpkg.com/tweenrex/dist/tweenrex.min.js?compression=gzip&label=gzip%20size&style=flat&cache=false)](https://unpkg.com/tweenrex/dist/tweenrex.min.js)
-
-
 ## Features
 
  - Playback controls: play, pause, reverse, playbackRate, seek, labels, etc.
@@ -53,23 +47,24 @@ Name | Description |
 [TyrannoScrollus](/docs/api/TyrannoScrollus.md) | Sync animations to horizontal or vertical scroll position of elements |
 [TRexObservable](/docs/api/TRexObservable.md) | General Observable for reacting to values over time. BehaviorSubject in RxJs is a close approximation. This is the base class for other types of tweens. |
 
-## Setup
+## Setup through NPM
 
-### Setup for CDN
-Include this script.  It will add TweenRex, TyrannoScrollus, and TRexObservable to the window.
-```html
-<script src="https://unpkg.com/tweenrex/dist/tweenrex.min.js"></script>
-```
+Install one or more of the following packages by running this command:   ```npm i {package} -S```
 
-### Setup for NPM
+Package | Status | Description |
+-- | -- | -- |
+| @tweenrex/core | [![Build Status](https://travis-ci.org/tweenrex/render.svg?branch=master)](https://travis-ci.org/tweenrex/core) | This package contains [TweenRex](/docs/api/TweenRex.md), [TyrannoScrollus](/docs/api/TyrannoScrollus.md), and [TRexObservable](/docs/api/TRexObservable.md).  It contains all you need for animation at minimum. |
+| @tweenrex/render | [![Build Status](https://travis-ci.org/tweenrex/core.svg?branch=master)](https://travis-ci.org/tweenrex/render) | This package contains [interpolate](/docs/api/interpolate.md) and other rendering functions.  This package is intended to help reduce boilerplate code and streamline development while creating typical animations. |
 
-Run this command to install from npm, and then import from the module
-```bash
-npm install @tweenrex/core --save
-```
-```js
-import { TweenRex, TyrannoScrollus, TRexObservable } from '@tweenrex/core'
-```
+## Setup with Prebuilt scripts
+Include one or more of these scripts
+
+
+Link | Description |
+-- | -- | -- |
+|<a target="_blank" href="https://unpkg.com/tweenrex/dist/tweenrex.min.js">tweenrex.min.js</a> | This script adds TweenRex, TyrannoScrollus, and TRexObservable to the global window variable.  This the a pre-bundled version of @tweenrex/core. |
+|<a target="_blank" href="https://unpkg.com/tweenrex/dist/tweenrex-render.min.js">tweenrex-render.min.js</a> | This script adds interpolate to the ```tweenrex``` global window variable.  This is a pre-bundled version of @tweenrex/render. |
+|<a target="_blank" href="https://unpkg.com/tweenrex/dist/tweenrex-all.min.js">tweenrex-all.min.js</a> | This script is a combination of all other scripts.  This is meant primarily for code playgrounds like [CodePen](https://codepen.io/). |
 
 ## Recommended Helper Libraries
 TweenRex handles timing and dealing with values over time, but is built to work with other libraries.  Here are some recommended helper libraries that match up with TweenRex very well.

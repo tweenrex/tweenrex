@@ -2,6 +2,11 @@
 # TRexObservable
 A simple observable and the base class for [TweenRex](./TweenRex.md) and [TyrannoScrollus](./TyrannoScrollus.md).  This is the best choice for animation when the animation greatly varies based on user input such as following mousement. For time-based animation use TweenRex.  For scroll-synced animations, use TyrannoScrollus.
 
+## Getting Started
+Install the ```@tweenrex/core``` package and import the ```TRexObservable``` function.
+```js
+import { TRexObservable } from '@tweenrex/core'
+```
 
 ## Usage
 Writing your typical foo-bar example
@@ -46,8 +51,11 @@ $('body').on('mousemove', observable.next)
 Name | Description |
 --- | --- |
 distinct | When true, subsequent values will be ignored if they are the same as the previous value.  The default is true. |
+easing | Applies an easing to the value passed to subscribers. |
 onDispose| Triggered by calling dispose() |
 onNext| Triggered by calling next() |
+onPause| Triggered by calling pause() |
+onPlay| Triggered by calling play() |
 onSubscribe| Triggered by calling subscribe() |
 onUnsubscribe| Triggered by unsubscribing |
 subscribe | Subscribes to changes in the value. |

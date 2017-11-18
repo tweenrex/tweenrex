@@ -2,6 +2,11 @@
 # TweenRex
 Tweens over a period of time with playback controls.  TweenRex is intentional very generic and can be used to tween dom objects, Three.js objects, etc.  It can even be used to tween the Web Animation API.
 
+## Getting Started
+Install the ```@tweenrex/core``` package and import the ```TweenRex``` function.
+```js
+import { TweenRex } from '@tweenrex/core'
+```
 
 ## Usage
 ```js
@@ -116,6 +121,9 @@ Starts tweening until the duration is reached.
 
 ### ```pause()```
 Pauses the tween.
+
+### ```restart()```
+Restarts the tween.
 
 ### ```reverse()```
 Flips the playbackRate to the opposite direction.

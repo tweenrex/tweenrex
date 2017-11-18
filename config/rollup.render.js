@@ -3,15 +3,17 @@ import typescript from 'rollup-plugin-typescript';
 import nodeResolve from 'rollup-plugin-node-resolve';
 
 module.exports = {
-  input: 'src/_browser.ts',
+  input: 'src/render.ts',
   name: 'tweenrex',
   exports: 'none',
   output: {
-    file: 'dist/tweenrex.js',
+    file: 'dist/tweenrex-render.js',
     format: 'iife'
   },
   plugins: [
     typescript({
+      allowJs: true,
+      tsconfig: false,
       target: 'es5',
       rootDir: 'src',
       module: 'es2015',

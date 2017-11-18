@@ -6,10 +6,6 @@ assets
 config
 docs
 node_modules
-src
-tests
-rollup.common.js
-tsconfig.json
-tsconfig.es2015.json
-tsconfig.node.json
+src  
+tsconfig.json 
 tslint.json
