@@ -36,6 +36,6 @@
     "version": "1.2.4",
     "dependencies": {
         "@tweenrex/core": "^1.2.4",
-        "@tweenrex/render": "^1.2.4"
+        "@tweenrex/render": "^1.2.5"
     }
 }
