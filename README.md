@@ -61,7 +61,7 @@ Include one or more of these scripts
 
 
 Link | Description |
--- | -- | -- |
+-- | -- |
 |<a target="_blank" href="https://unpkg.com/tweenrex/dist/tweenrex.min.js">tweenrex.min.js</a> | This script adds TweenRex, TyrannoScrollus, and TRexObservable to the global window variable.  This the a pre-bundled version of @tweenrex/core. |
 |<a target="_blank" href="https://unpkg.com/tweenrex/dist/tweenrex-render.min.js">tweenrex-render.min.js</a> | This script adds interpolate to the ```tweenrex``` global window variable.  This is a pre-bundled version of @tweenrex/render. |
 |<a target="_blank" href="https://unpkg.com/tweenrex/dist/tweenrex-all.min.js">tweenrex-all.min.js</a> | This script is a combination of all other scripts.  This is meant primarily for code playgrounds like [CodePen](https://codepen.io/). |
