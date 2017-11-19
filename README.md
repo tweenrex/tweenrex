@@ -15,10 +15,10 @@
 
 
 ## Demos
-- [Check your Heart with TweenRex + Polymorph](https://codepen.io/notoriousb1t/pen/dZveGQ?editors=1010)
-
+- [Check your Heart with TweenRex + Polymorph](https://codepen.io/notoriousb1t/pen/dZveGQ)
 - [Dinos Unite! (Sub-tweens with TweenRex)](https://codepen.io/shshaw/pen/mqMRbE)
 - [Syncing Horizontal Scroll with TweenRex](https://codepen.io/shshaw/pen/jaLqBB)
+- **[View All Demos](docs/api/examples.md)**
 
 <table width="100%">
 <tr>
