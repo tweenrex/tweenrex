@@ -33,7 +33,7 @@
         "preversion": "npm run rebuild",
         "rebuild": "npm run clean && npm run build"
     },
-    "version": "1.2.5",
+    "version": "1.2.7",
     "dependencies": {
         "@tweenrex/core": "^1.2.7",
         "@tweenrex/render": "^1.2.5"
