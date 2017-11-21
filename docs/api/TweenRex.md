@@ -105,6 +105,10 @@ tween.play();
 ### ```dispose()```
 Removes all subscriptions and resets the internal state.
 
+### ```value()```
+Returns the last value to be observed
+
+
 ## Labels
 
 ### ```getLabel(name)```

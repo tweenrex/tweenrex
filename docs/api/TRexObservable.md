@@ -60,12 +60,18 @@ onSubscribe| Triggered by calling subscribe() |
 onUnsubscribe| Triggered by unsubscribing |
 subscribe | Subscribes to changes in the value. |
 
-## Observable Configuration
+## Observable Functions
+
+### ```dispose()```
+Removes all subscriptions and resets the internal state.
+
+### ```next(value)```
+Passes the next value to be observed
 
 ### ```subscribe(observer | observer[])```
 Subscribes the observer to changes in the value.  This can be any value including strings and full objects.
 
 You can pass in an array of functions or a single function.  If there isn't a need to remove subscriptions, you can specify a subscribe property like the examples above.
 
-### ```dispose()```
-Removes all subscriptions and resets the internal state.
+### ```value()```
+Returns the last value observed
