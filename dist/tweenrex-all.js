@@ -29,6 +29,9 @@ function TRexObservable(options) {
     var c;
     var buffer;
     return {
+        value: function () {
+            return c;
+        },
         dispose: function () {
             subs.length = 0;
             onDispose();
@@ -43,11 +46,11 @@ function TRexObservable(options) {
             }
             for (var h = 0; h < buffer.length; h++) {
                 var subs2 = subs.slice();
-                var n_1 = buffer[h];
-                if (!distinct || n_1 !== c) {
-                    c = n_1;
+                n = buffer[h];
+                if (!distinct || n !== c) {
+                    c = n;
                     for (var i = 0; i < subs2.length; i++) {
-                        subs2[i](n_1);
+                        subs2[i](n);
                     }
                 }
             }
@@ -73,7 +76,7 @@ function newify(self, type) {
 }
 
 var onNextFrame = typeof requestAnimationFrame !== 'undefined'
-    ? requestAnimationFrame
+    ? requestAnimationFrame.bind(window)
     : function (fn) { return setTimeout(function () { return fn(Date.now()); }, 1000 / 60); };
 
 var defaultTimer = TRexObservable({
@@ -106,9 +109,16 @@ function TyrannoScrollus(options) {
     self.direction = options.direction;
     self._tick = function () {
         var target = self.target;
-        var value = self.direction === 'x'
-            ? target.scrollLeft / (target.scrollWidth - target.clientWidth)
-            : target.scrollTop / (target.scrollHeight - target.clientHeight);
+        var scrollOffset, totalScroll;
+        if (self.direction === 'x') {
+            scrollOffset = target.scrollLeft;
+            totalScroll = target.scrollWidth - target.clientWidth;
+        }
+        else {
+            scrollOffset = target.scrollTop;
+            totalScroll = target.scrollHeight - target.clientHeight;
+        }
+        var value = !totalScroll || !isFinite(totalScroll) ? 0 : scrollOffset / totalScroll;
         if (self.easing) {
             value = self.easing(value);
         }
@@ -116,6 +126,7 @@ function TyrannoScrollus(options) {
     };
     var obs = TRexObservable(options);
     self.next = obs.next;
+    self.value = obs.value;
     self.subscribe = obs.subscribe;
     self.dispose = function () {
         self.pause();
@@ -185,6 +196,7 @@ function TweenRex(opts) {
         obs.dispose();
     };
     self.next = obs.next;
+    self.value = obs.value;
     self.subscribe = obs.subscribe;
     return self;
 }
@@ -321,8 +333,8 @@ TweenRex.prototype = {
                 var tween = t.tween;
                 var startPos = t.pos;
                 var endPos = startPos + (tween.duration || 1);
-                var offset_1 = minMax((c - startPos) / (endPos - startPos), 0, 1);
-                tween.next(offset_1);
+                var ro = minMax((c - startPos) / (endPos - startPos), 0, 1);
+                tween.next(ro);
             }
         }
         if (isFinished && self._opts.onFinish) {
