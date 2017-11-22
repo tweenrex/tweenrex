@@ -100,29 +100,45 @@ function resolveTarget(target) {
     return isString(target.tagName) ? target : document.querySelector(target);
 }
 
+var math = Math;
+var min = math.min;
+var max = math.max;
+function minMax(val, minVal, maxVal) {
+    return min(max(minVal, val), maxVal);
+}
+
 function TyrannoScrollus(options) {
     var self = newify(this, TyrannoScrollus);
     self._opts = options;
     self.target = resolveTarget(options.targets);
     self._timer = options.timer || defaultTimer;
+    self.startAt = options.startAt;
+    self.endAt = options.endAt;
     self.easing = options.easing;
     self.direction = options.direction;
     self._tick = function () {
         var target = self.target;
-        var scrollOffset, totalScroll;
+        var scrollOffset, scrollStart, scrollEnd;
         if (self.direction === 'x') {
             scrollOffset = target.scrollLeft;
-            totalScroll = target.scrollWidth - target.clientWidth;
+            scrollStart = self.startAt || 0;
+            scrollEnd = self.endAt ? self.endAt : target.scrollWidth - target.clientWidth;
         }
         else {
             scrollOffset = target.scrollTop;
-            totalScroll = target.scrollHeight - target.clientHeight;
+            scrollStart = self.startAt || 0;
+            scrollEnd = self.endAt ? self.endAt : target.scrollHeight - target.clientHeight;
         }
-        var value = !totalScroll || !isFinite(totalScroll) ? 0 : scrollOffset / totalScroll;
-        if (self.easing) {
-            value = self.easing(value);
+        var value = minMax(!scrollEnd || !isFinite(scrollEnd) ? 0 : (scrollOffset - scrollStart) / (scrollEnd - scrollStart), 0, 1);
+        if (!self.easing) {
+            self.next(value);
         }
-        self.next(value);
+        else if (self.easing.tr_type === 'ASYNC') {
+            self.easing(value, self.next);
+        }
+        else {
+            self.next(self.easing(value));
+        }
     };
     var obs = TRexObservable(options);
     self.next = obs.next;
@@ -160,10 +176,6 @@ TyrannoScrollus.prototype = {
         }
     }
 };
-
-function minMax(val, min, max) {
-    return val < min ? min : val > max ? max : val;
-}
 
 function coalesce(current, fallback) {
     return current === _ ? fallback : current;
@@ -308,7 +320,6 @@ TweenRex.prototype = {
         var self = this;
         var isForwards = self.playbackRate >= 0;
         var duration = self.duration;
-        var tweens = self._tweens;
         var c = isString(n) ? self.labels[n] : n;
         var isFinished;
         if (isForwards && c >= duration) {
@@ -326,6 +337,10 @@ TweenRex.prototype = {
         if (self.easing) {
             offset = self.easing(offset);
         }
+        if (isFinished && self._opts.onFinish) {
+            self._opts.onFinish();
+        }
+        var tweens = self._tweens;
         self.next(offset);
         if (tweens) {
             for (var i = 0, ilen = tweens.length; i < ilen; i++) {
@@ -336,9 +351,6 @@ TweenRex.prototype = {
                 var ro = minMax((c - startPos) / (endPos - startPos), 0, 1);
                 tween.next(ro);
             }
-        }
-        if (isFinished && self._opts.onFinish) {
-            self._opts.onFinish();
         }
         return self;
     },

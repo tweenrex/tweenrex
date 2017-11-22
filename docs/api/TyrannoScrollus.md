@@ -33,6 +33,7 @@ Name | Description |
 distinct | When true, subsequent values will be ignored if they are the same as the previous value.  The default is true. |
 direction| The axis to observe.  'x' detects scrolling horizontally and 'y' detects scrolling vertically.  'y' is the default.|
 easing | Eases subscribe by a function. |
+endAt | Specifies where the end of scrolling area is in pixels. |
 frameSize | Overrides deltas produced by the timer with a constant rate |
 easing | Applies an easing to the value passed to subscribers. |
 onDispose| Triggered by calling dispose() |
@@ -42,6 +43,7 @@ onPlay| Triggered by calling play() |
 onNext| Triggered by calling next() |
 onSubscribe| Triggered by calling subscribe() |
 onUnsubscribe| Triggered by unsubscribing |
+startAt | Specifies where the start of scrolling area is in pixels. |
 subscribe | Subscribes to changes in the value.  The value provided is a number between 0 and 1 representing 0% to 100% of scroll position.  This can be either a function or an array of functions. |
 targets|An element or selector to observe scroll position|
 timer | The observable that provides new time deltas.  If ```undefined```, it will use a default timer.  The default value is ```undefined```.  |

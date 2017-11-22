@@ -35,7 +35,7 @@
     },
     "version": "1.2.7",
     "dependencies": {
-        "@tweenrex/core": "^1.2.7",
-        "@tweenrex/render": "^1.2.5"
+        "@tweenrex/core": "1.2.9",
+        "@tweenrex/render": "1.2.5"
     }
 }
