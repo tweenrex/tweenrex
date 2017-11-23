@@ -51,11 +51,8 @@ $('body').on('mousemove', observable.next)
 Name | Description |
 --- | --- |
 distinct | When true, subsequent values will be ignored if they are the same as the previous value.  The default is true. |
-easing | Applies an easing to the value passed to subscribers. |
 onDispose| Triggered by calling dispose() |
 onNext| Triggered by calling next() |
-onPause| Triggered by calling pause() |
-onPlay| Triggered by calling play() |
 onSubscribe| Triggered by calling subscribe() |
 onUnsubscribe| Triggered by unsubscribing |
 subscribe | Subscribes to changes in the value. |
