@@ -37,7 +37,6 @@ endAt | Specifies where the end of scrolling area is in pixels. |
 frameSize | Overrides deltas produced by the timer with a constant rate |
 easing | Applies an easing to the value passed to subscribers. |
 onDispose| Triggered by calling dispose() |
-onFinish| Triggered when playback finishes |
 onPause| Triggered by calling pause() |
 onPlay| Triggered by calling play() |
 onNext| Triggered by calling next() |
