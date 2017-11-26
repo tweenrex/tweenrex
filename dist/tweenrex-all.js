@@ -319,25 +319,26 @@ TweenRex.prototype = {
     seek: function (n) {
         var self = this;
         var isForwards = self.playbackRate >= 0;
+        var wasPlaying = self.isPlaying;
         var duration = self.duration;
         var c = isString(n) ? self.labels[n] : n;
-        var isFinished;
+        var isAtEnd;
         if (isForwards && c >= duration) {
             c = duration;
             self.pause();
-            isFinished = true;
+            isAtEnd = true;
         }
         else if (!isForwards && c <= 0) {
             c = 0;
             self.pause();
-            isFinished = true;
+            isAtEnd = true;
         }
         self._time = c;
         var offset = c / (duration || 1);
         if (self.easing) {
             offset = self.easing(offset);
         }
-        if (isFinished && self._opts.onFinish) {
+        if (isAtEnd && wasPlaying && self._opts.onFinish) {
             self._opts.onFinish();
         }
         var tweens = self._tweens;

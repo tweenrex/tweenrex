@@ -1,5 +1,5 @@
 import { interpolate } from '@tweenrex/render'
 
-var global = window as any
-var tweenrex = global.tweenrex || (global.tweenrex = {})
+const global = window as any
+const tweenrex = global.tweenrex || (global.tweenrex = {})
 tweenrex.interpolate = interpolate

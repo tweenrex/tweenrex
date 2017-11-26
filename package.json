@@ -8,6 +8,7 @@
         "@types/node": "^8.0.53",
         "del-cli": "^1.1.0",
         "rollup": "^0.51.5",
+        "rollup-plugin-commonjs": "^8.2.6",
         "rollup-plugin-node-resolve": "^3.0.0",
         "rollup-plugin-typescript": "^0.8.1",
         "tslint": "^5.8.0",
@@ -24,9 +25,10 @@
     "types": "./types/index",
     "typings": "./types/index",
     "scripts": {
-        "build": "npm run build:core && npm run build:all && npm run build:render",
+        "build": "npm run build:core && npm run build:debug && npm run build:render && npm run build:all ",
         "build:all": "rollup -c ./config/rollup.all.js && uglifyjs --config-file ./config/compress.json -o dist/tweenrex-all.min.js dist/tweenrex-all.js",
         "build:core": "rollup -c ./config/rollup.core.js && uglifyjs --config-file ./config/compress.json -o dist/tweenrex.min.js dist/tweenrex.js",
+        "build:debug": "rollup -c ./config/rollup.debug.js && uglifyjs --config-file ./config/compress.json -o dist/tweenrex-debug.min.js dist/tweenrex-debug.js",
         "build:render": "rollup -c ./config/rollup.render.js && uglifyjs --config-file ./config/compress.json -o dist/tweenrex-render.min.js dist/tweenrex-render.js",
         "clean": "node_modules/.bin/del-cli -f dist",
         "postversion": "git push --follow-tags && npm publish",
@@ -35,7 +37,8 @@
     },
     "version": "1.2.9",
     "dependencies": {
-        "@tweenrex/core": "1.2.9",
-        "@tweenrex/render": "1.2.5"
+        "@tweenrex/core": "1.2.10",
+        "@tweenrex/render": "1.2.5",
+        "@tweenrex/debug": "0.0.6"
     }
 }

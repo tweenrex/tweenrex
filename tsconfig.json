@@ -7,7 +7,7 @@
         "inlineSourceMap": false,
         "module": "commonjs",
         "newLine": "LF",
-        "noEmit": true,
+        "noEmit": true, 
         "noFallthroughCasesInSwitch": true, 
         "noUnusedLocals": true,        
         "preserveConstEnums": false,
