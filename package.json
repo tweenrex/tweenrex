@@ -7,13 +7,13 @@
     "devDependencies": {
         "@types/node": "^8.0.53",
         "del-cli": "^1.1.0",
-        "rollup": "^0.51.5",
+        "rollup": "^0.51.8",
         "rollup-plugin-commonjs": "^8.2.6",
         "rollup-plugin-node-resolve": "^3.0.0",
         "rollup-plugin-typescript": "^0.8.1",
         "tslint": "^5.8.0",
-        "typescript": "^2.6.1",
-        "uglify-js": "^3.1.9"
+        "typescript": "^2.6.2",
+        "uglify-js": "^3.2.0"
     },
     "homepage": "https://github.com/tweenrex/tweenrex#readme",
     "license": "MIT",
@@ -37,7 +37,7 @@
     },
     "version": "1.3.0",
     "dependencies": {
-        "@tweenrex/core": "1.2.10",
+        "@tweenrex/core": "1.3.1",
         "@tweenrex/render": "1.2.5",
         "@tweenrex/debug": "0.0.6"
     }

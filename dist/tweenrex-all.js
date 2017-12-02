@@ -341,9 +341,15 @@ TweenRex.prototype = {
         if (isAtEnd && wasPlaying && self._opts.onFinish) {
             self._opts.onFinish();
         }
-        var tweens = self._tweens;
+        var isSeekingBackward = c < self.value();
         self.next(offset);
+        var tweens = self._tweens;
         if (tweens) {
+            var d_1 = duration - c;
+            tweens.sort(function (a, b) { return ((d_1 + a.pos) % duration) - ((d_1 + b.pos) % duration); });
+            if (isSeekingBackward) {
+                tweens.reverse();
+            }
             for (var i = 0, ilen = tweens.length; i < ilen; i++) {
                 var t = tweens[i];
                 var tween = t.tween;
