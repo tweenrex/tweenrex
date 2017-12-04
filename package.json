@@ -38,6 +38,7 @@
         "postinstall": "npm run get-latest && npm run update:all",
         "postversion": "git push --follow-tags && npm publish",
         "preversion": "npm run rebuild", 
+        "deploy": "lerna publish",
         "rebuild": "npm i && npm run clean && npm run build && npm run rollup",
         "rollup": "npm run rollup:core && npm run rollup:debug && npm run rollup:render && npm run rollup:all",
         "rollup:all": "rollup -c ./config/rollup.all.js && uglifyjs --config-file ./config/compress.json -o dist/tweenrex-all.min.js dist/tweenrex-all.js",
