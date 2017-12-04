@@ -38,7 +38,7 @@
         "get-latest": "git submodule update --recursive --remote",
         "postinstall": "npm run get-latest && npm run update:all",
         "preversion": "npm run rebuild",
-        "push:all": "npm run push:main && npm run push:core && npm run push:debug && npm run push:render",
+        "push:all": "npm run push:core && npm run push:debug && npm run push:render && npm run push:main",
         "push:main": "git add . && git commit -m \"updated version\" && git push",
         "push:core": "cd ./packages/core && git add . && git commit -m \"updated version\" && git push",
         "push:debug": "cd ./packages/debug && git add . && git commit -m \"updated version\" && git push",
