@@ -3,17 +3,15 @@
 
 var math = Math;
 var min = math.min;
+
+
 var max = math.max;
 var round = math.round;
 var sqrt = math.sqrt;
 var floor = math.floor;
-function clamp(val, lower, upper) {
-    return max(lower, min(upper, val));
-}
-
-var isArray = Array.isArray;
-function pushAll(a, b) {
-    a.push.apply(a, b);
+var degrees = 180 / math.PI;
+function clamp(val, bottom, top) {
+    return val < bottom ? bottom : val > top ? top : val;
 }
 
 var cssVarExp = /^\-\-[a-z0-9\-]+$/i;
@@ -22,13 +20,84 @@ var cssVarExp = /^\-\-[a-z0-9\-]+$/i;
 
 var _ = undefined;
 var sq255 = 65025;
+var TARGETS = 'targets';
+var EASING = 'easing';
+var builtInRenderOptions = [TARGETS, EASING];
+
+var isArray = Array.isArray;
+function pushAll(a, b) {
+    a.push.apply(a, b);
+}
+
+function renderer(ro) {
+    return function (opts) {
+        var targets = ro.getTargets(opts.targets);
+        var props = Object.keys(opts).filter(isCustomProp);
+        var configs = [];
+        for (var t = 0, tlen = targets.length; t < tlen; t++) {
+            pushAll(configs, ro.getEffects(targets[t], props, opts));
+        }
+        var renderers = configs.map(getRenderItem);
+        if (opts.debug) {
+            renderers.forEach(function (r) { return opts.debug(r.target, r.render); });
+        }
+        return getEasedFunction(opts, function (o) {
+            for (var i = 0; i < renderers.length; i++) {
+                var item = renderers[i];
+                item.render(o, item.target);
+            }
+        });
+    };
+}
+function getRenderItem(config) {
+    var renderFn = getEasedFunction(config, function (offset, target2) {
+        var total = config.value.length - 1;
+        var totalOffset = total * offset;
+        var stepStart = max(floor(totalOffset), 0);
+        var stepEnd = min(stepStart + 1, total);
+        if (total === stepStart) {
+            stepStart--;
+        }
+        if (!stepEnd) {
+            stepEnd++;
+        }
+        var nextValue = config.mix(config.value[stepStart], config.value[stepEnd], totalOffset - stepStart);
+        if (config.format) {
+            nextValue = config.format(nextValue);
+        }
+        config.set(target2, config.prop, nextValue);
+    });
+    return {
+        render: renderFn,
+        target: config.target
+    };
+}
+function getEasedFunction(options, fn) {
+    return function (offset, target2) {
+        var easing = options.easing;
+        if (!easing) {
+            fn(offset, target2);
+        }
+        else if (easing.tr_type === 'ASYNC') {
+            easing(offset, target2, fn);
+        }
+        else {
+            fn(easing(offset), target2);
+        }
+    };
+}
+function isCustomProp(prop) {
+    return builtInRenderOptions.indexOf(prop) === -1;
+}
 
 function isDOM(target) {
     return target instanceof Element;
 }
+
 function isNumber(obj) {
     return typeof obj === 'number';
 }
+
 function isString(obj) {
     return typeof obj === 'string';
 }
@@ -37,93 +106,6 @@ function isNumeric(obj) {
 }
 function isDefined(obj) {
     return obj !== _;
-}
-
-var optionNames = ['targets', 'secondary', 'easing'];
-function renderer(ro) {
-    return function (opts) {
-        var targets = ro.getTargets(opts.targets);
-        var renderers = [];
-        var _loop_1 = function (t, tlen) {
-            var target = targets[t];
-            var _loop_2 = function (prop) {
-                if (optionNames.indexOf(prop) === -1) {
-                    var targetAdapter_1 = ro.getAdapter(target, prop);
-                    var value = opts[prop];
-                    var valueConfig_1 = isDefined(value.value)
-                        ? value
-                        : { value: value };
-                    if (!isArray(valueConfig_1.value)) {
-                        valueConfig_1.value = [targetAdapter_1.get(target, prop), valueConfig_1.value];
-                    }
-                    var ilen = valueConfig_1.value.length;
-                    var values_1 = Array(ilen);
-                    for (var i = 0; i < ilen; i++) {
-                        var r = valueConfig_1.value[i];
-                        var parsed = ro.parse(r, valueConfig_1.type);
-                        values_1[i] = parsed.value;
-                        if (!valueConfig_1.mix) {
-                            valueConfig_1.mix = parsed.mix;
-                        }
-                        if (!valueConfig_1.format) {
-                            valueConfig_1.format = parsed.format;
-                        }
-                    }
-                    var renderFn_1 = function (offset) {
-                        var total = values_1.length - 1;
-                        var totalOffset = total * offset;
-                        var stepStart = max(floor(totalOffset), 0);
-                        var stepEnd = min(stepStart + 1, total);
-                        if (total === stepStart) {
-                            stepStart--;
-                        }
-                        if (!stepEnd) {
-                            stepEnd++;
-                        }
-                        var nextValue = valueConfig_1.mix(values_1[stepStart], values_1[stepEnd], totalOffset - stepStart);
-                        if (valueConfig_1.format) {
-                            nextValue = valueConfig_1.format(nextValue);
-                        }
-                        targetAdapter_1.set(target, prop, nextValue);
-                    };
-                    renderers.push(function (offset) {
-                        if (valueConfig_1.easing) {
-                            offset = valueConfig_1.easing(offset);
-                        }
-                        if (valueConfig_1.secondary) {
-                            valueConfig_1.secondary(offset, renderFn_1);
-                        }
-                        else {
-                            renderFn_1(offset);
-                        }
-                    });
-                }
-            };
-            for (var prop in opts) {
-                _loop_2(prop);
-            }
-        };
-        for (var t = 0, tlen = targets.length; t < tlen; t++) {
-            _loop_1(t, tlen);
-        }
-        var rLen = renderers.length;
-        var render = function (o) {
-            for (var i = 0; i < rLen; i++) {
-                renderers[i](o);
-            }
-        };
-        return function (offset) {
-            if (opts.easing) {
-                offset = opts.easing(offset);
-            }
-            if (opts.secondary) {
-                opts.secondary(offset, render);
-            }
-            else {
-                render(offset);
-            }
-        };
-    };
 }
 
 function resolveDomTargets(targets, results) {
@@ -231,6 +213,9 @@ function mixDiscrete(a, b, o) {
 
 function mixTerms(aTerms, bTerms, o) {
     var ilen = min(aTerms.length, bTerms.length);
+    if (isNaN(ilen)) {
+        console.log(aTerms, bTerms);
+    }
     var result = Array(ilen);
     var rgbLocked = 0;
     for (var i = 0; i < ilen; i++) {
@@ -261,49 +246,54 @@ function mixTerms(aTerms, bTerms, o) {
 var TERMS = 'terms';
 var NUMBER = 'number';
 var interpolate = renderer({
-    parse: function (value, type) {
-        if (!type) {
-            if (isNumeric(value)) {
-                type = NUMBER;
-            }
-            else if (isString(value) && /\d*/.test(value)) {
-                type = TERMS;
-            }
-        }
-        if (type === NUMBER) {
-            return {
-                value: +value,
-                mix: mixNumber,
-                format: numberToString
+    getEffects: function (target, props, opts) {
+        var effects = [];
+        for (var i = 0; i < props.length; i++) {
+            var prop = props[i];
+            var value = opts[prop];
+            var valueAsConfig = value;
+            var effect = {
+                target: target,
+                prop: prop,
+                value: []
             };
+            var value2 = void 0;
+            var type = void 0;
+            if (isDefined(valueAsConfig.value)) {
+                effect.easing = valueAsConfig.easing;
+                effect.format = valueAsConfig.format;
+                effect.mix = valueAsConfig.mix;
+                type = valueAsConfig.type;
+                value2 = valueAsConfig.value;
+            }
+            else {
+                value2 = value;
+            }
+            var targetAdapter = getAdapter(target, prop);
+            effect.set = effect.set || targetAdapter.set;
+            if (!isArray(value2)) {
+                effect.value = [targetAdapter.get(target, prop), value2];
+            }
+            else {
+                effect.value = value2;
+            }
+            var ilen = effect.value.length;
+            var values = Array(ilen);
+            for (var j = 0; j < ilen; j++) {
+                var r = effect.value[j];
+                var parsed = parse(r, type);
+                values[j] = parsed.value;
+                if (!effect.mix) {
+                    effect.mix = parsed.mix;
+                }
+                if (!effect.format) {
+                    effect.format = parsed.format;
+                }
+            }
+            effect.value = values;
+            effects.push(effect);
         }
-        if (type === TERMS) {
-            return {
-                value: stringToTerms(hexToRgb(value)),
-                mix: mixTerms,
-                format: termsToString
-            };
-        }
-        return {
-            value: value,
-            mix: mixDiscrete
-        };
-    },
-    getAdapter: function (target, prop) {
-        if (!isDOM(target)) {
-            return propertyAdapter;
-        }
-        var el = target;
-        if (cssVarExp.test(prop)) {
-            return cssVariableAdapter;
-        }
-        if (typeof el.style[prop] !== 'undefined') {
-            return styleAdapter;
-        }
-        if (el.hasAttribute(prop)) {
-            return attributeAdapter;
-        }
-        return propertyAdapter;
+        return effects;
     },
     getTargets: function (targets) {
         var results = [];
@@ -311,6 +301,50 @@ var interpolate = renderer({
         return results;
     }
 });
+function parse(value, type) {
+    if (!type) {
+        if (isNumeric(value)) {
+            type = NUMBER;
+        }
+        else if (isString(value) && /\d*/.test(value)) {
+            type = TERMS;
+        }
+    }
+    if (type === NUMBER) {
+        return {
+            value: +value,
+            mix: mixNumber,
+            format: numberToString
+        };
+    }
+    if (type === TERMS) {
+        return {
+            value: stringToTerms(hexToRgb(value)),
+            mix: mixTerms,
+            format: termsToString
+        };
+    }
+    return {
+        value: value,
+        mix: mixDiscrete
+    };
+}
+function getAdapter(target, prop) {
+    if (!isDOM(target)) {
+        return propertyAdapter;
+    }
+    var el = target;
+    if (cssVarExp.test(prop)) {
+        return cssVariableAdapter;
+    }
+    if (typeof el.style[prop] !== 'undefined') {
+        return styleAdapter;
+    }
+    if (el.hasAttribute(prop)) {
+        return attributeAdapter;
+    }
+    return propertyAdapter;
+}
 
 var global = window;
 var tweenrex = global.tweenrex || (global.tweenrex = {});

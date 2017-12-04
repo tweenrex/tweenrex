@@ -6,9 +6,12 @@
     "description": "Bundled CDN files for TweenRex",
     "devDependencies": {
         "@types/node": "^8.0.53",
+        "babel-core": "^6.26.0",
+        "concurrently": "^3.5.1",
         "del-cli": "^1.1.0",
         "rollup": "^0.51.8",
         "rollup-plugin-commonjs": "^8.2.6",
+        "rollup-plugin-filesize": "^1.5.0",
         "rollup-plugin-node-resolve": "^3.0.0",
         "rollup-plugin-typescript": "^0.8.1",
         "tslint": "^5.8.0",
@@ -25,20 +28,30 @@
     "types": "./types/index",
     "typings": "./types/index",
     "scripts": {
-        "build": "npm run build:core && npm run build:debug && npm run build:render && npm run build:all ",
-        "build:all": "rollup -c ./config/rollup.all.js && uglifyjs --config-file ./config/compress.json -o dist/tweenrex-all.min.js dist/tweenrex-all.js",
-        "build:core": "rollup -c ./config/rollup.core.js && uglifyjs --config-file ./config/compress.json -o dist/tweenrex.min.js dist/tweenrex.js",
-        "build:debug": "rollup -c ./config/rollup.debug.js && uglifyjs --config-file ./config/compress.json -o dist/tweenrex-debug.min.js dist/tweenrex-debug.js",
-        "build:render": "rollup -c ./config/rollup.render.js && uglifyjs --config-file ./config/compress.json -o dist/tweenrex-render.min.js dist/tweenrex-render.js",
+        "build": "concurrently \"npm run build:core\" \"npm run build:debug\" \"npm run build:render\"",
+        "build:core": "cd ./packages/core && npm run rebuild",
+        "build:debug": "cd ./packages/debug && npm run rebuild",
+        "build:render": "cd ./packages/render && npm run rebuild",
         "clean": "node_modules/.bin/del-cli -f dist",
+        "get-latest": "git submodule update --recursive --remote",
+        "postinstall": "npm run get-latest && npm run update:all",
         "postversion": "git push --follow-tags && npm publish",
         "preversion": "npm run rebuild",
-        "rebuild": "npm run clean && npm run build"
+        "rebuild": "npm i && npm run clean && npm run build && npm run rollup",
+        "rollup": "npm run rollup:core && npm run rollup:debug && npm run rollup:render && npm run rollup:all",
+        "rollup:all": "rollup -c ./config/rollup.all.js && uglifyjs --config-file ./config/compress.json -o dist/tweenrex-all.min.js dist/tweenrex-all.js",
+        "rollup:core": "rollup -c ./config/rollup.core.js && uglifyjs --config-file ./config/compress.json -o dist/tweenrex.min.js dist/tweenrex.js",
+        "rollup:debug": "rollup -c ./config/rollup.debug.js && uglifyjs --config-file ./config/compress.json -o dist/tweenrex-debug.min.js dist/tweenrex-debug.js",
+        "rollup:render": "rollup -c ./config/rollup.render.js && uglifyjs --config-file ./config/compress.json -o dist/tweenrex-render.min.js dist/tweenrex-render.js",
+        "update:all": "concurrently \"npm run update:core\" \"npm run update:debug\" \"npm run update:render\"",
+        "update:core": "cd ./packages/core && npm i",
+        "update:debug": "cd ./packages/debug && npm i",
+        "update:render": "cd ./packages/render && npm i"
     },
     "version": "1.3.1",
     "dependencies": {
-        "@tweenrex/core": "1.3.1",
-        "@tweenrex/render": "1.2.5",
-        "@tweenrex/debug": "0.0.6"
+        "@tweenrex/core": "file:packages/core",
+        "@tweenrex/debug": "file:packages/debug",
+        "@tweenrex/render": "file:packages/render"
     }
 }

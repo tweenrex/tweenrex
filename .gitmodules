@@ -1,0 +1,9 @@
+[submodule "packages/core"]
+	path = packages/core
+	url = https://github.com/tweenrex/core.git
+[submodule "packages/render"]
+	path = packages/render
+	url = https://github.com/tweenrex/render.git
+[submodule "packages/debug"]
+	path = packages/debug
+	url = https://github.com/tweenrex/debug.git
