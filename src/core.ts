@@ -1,4 +1,6 @@
-import { TRexObservable, TyrannoScrollus, TweenRex } from '@tweenrex/core'
+import { TRexObservable } from '../packages/core/lib.es2015/TRexObservable'
+import { TyrannoScrollus } from '../packages/core/lib.es2015/TyrannoScrollus'
+import { TweenRex } from '../packages/core/lib.es2015/TweenRex'
 
 // export to window
 const global = window as any

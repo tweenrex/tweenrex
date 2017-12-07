@@ -1,7 +1,7 @@
-import { player, visualize } from '@tweenrex/debug'
+import { player, visualize } from '../packages/debug/lib/index.js'
 
-const window2 = window as any
-const tweenrex = window2.tweenrex || (window2.tweenrex = {})
+const w = window as any
+const tweenrex = w.tweenrex || (w.tweenrex = {})
 tweenrex.debug = {
     player,
     visualize

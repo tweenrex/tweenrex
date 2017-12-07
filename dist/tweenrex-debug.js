@@ -7425,8 +7425,8 @@ unwrapExports(lib);
 var lib_1 = lib.visualize;
 var lib_2 = lib.player;
 
-var window2 = window;
-var tweenrex = window2.tweenrex || (window2.tweenrex = {});
+var w = window;
+var tweenrex = w.tweenrex || (w.tweenrex = {});
 tweenrex.debug = {
     player: lib_2,
     visualize: lib_1

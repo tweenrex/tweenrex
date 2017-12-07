@@ -373,15 +373,11 @@ function ensureTween(opts) {
     return opts instanceof TweenRex ? opts : TweenRex(opts);
 }
 
-var global = window;
-global.TRexObservable = TRexObservable;
-global.TyrannoScrollus = TyrannoScrollus;
-global.TweenRex = TweenRex;
-
+var floatExp = /^(\-?\d+\.?\d{0,5})/;
 var math$1 = Math;
 var min$1 = math$1.min;
-
-
+var atan = math$1.atan;
+var atan2 = math$1.atan2;
 var max$1 = math$1.max;
 var round = math$1.round;
 var sqrt = math$1.sqrt;
@@ -389,6 +385,9 @@ var floor = math$1.floor;
 var degrees = 180 / math$1.PI;
 function clamp(val, bottom, top) {
     return val < bottom ? bottom : val > top ? top : val;
+}
+function roundFloat(n) {
+    return floatExp.exec(n.toString())[1];
 }
 
 var cssVarExp = /^\-\-[a-z0-9\-]+$/i;
@@ -467,14 +466,19 @@ function isCustomProp(prop) {
     return builtInRenderOptions.indexOf(prop) === -1;
 }
 
+var w$1 = window;
 function isDOM(target) {
     return target instanceof Element;
 }
-
+function isSVG(target) {
+    return w$1.SVGElement && target instanceof w$1.SVGElement;
+}
 function isNumber(obj) {
     return typeof obj === 'number';
 }
-
+function isFunction(obj) {
+    return typeof obj === 'function';
+}
 function isString$1(obj) {
     return typeof obj === 'string';
 }
@@ -723,8 +727,160 @@ function getAdapter(target, prop) {
     return propertyAdapter;
 }
 
-var global$1 = window;
-var tweenrex = global$1.tweenrex || (global$1.tweenrex = {});
-tweenrex.interpolate = interpolate;
+var matrix;
+function decomposeMatrix(value) {
+    if (!matrix) {
+        var w = window;
+        matrix = w.WebKitCSSMatrix || w.MSCSSMatrix || w.DOMMatrix;
+    }
+    var _a = new matrix(value), a = _a.a, b = _a.b, c = _a.c, d = _a.d, e = _a.e, f = _a.f;
+    var scaleX = sqrt(a * a + b * b);
+    if (scaleX) {
+        a /= scaleX;
+        b /= scaleX;
+    }
+    var skewX = a * c + b * d;
+    if (skewX) {
+        c -= a * skewX;
+        d -= b * skewX;
+    }
+    var scaleY = sqrt(c * c + d * d);
+    if (scaleY) {
+        c /= scaleY;
+        d /= scaleY;
+        skewX /= scaleY;
+    }
+    if (a * d < b * c) {
+        a = -a;
+        b = -b;
+        skewX = -skewX;
+        scaleX = -scaleX;
+    }
+    return {
+        rotate: atan2(b, a) * degrees,
+        scaleX: scaleX,
+        scaleY: scaleY,
+        skewX: atan(skewX) * degrees,
+        x: e,
+        y: f
+    };
+}
+
+var ops = [];
+var frame;
+function scheduler(fn) {
+    return function () {
+        ops.push(fn);
+        frame = frame || setTimeout(forceTick, 0) || 1;
+    };
+}
+function forceTick() {
+    for (var i = 0; i < ops.length; i++) {
+        ops[i]();
+    }
+    frame = ops.length = 0;
+}
+
+function observe(obj, onUpdate) {
+    onUpdate = scheduler(onUpdate);
+    var _loop_1 = function (name_1) {
+        if (obj.hasOwnProperty(name_1) && !isFunction(obj[name_1])) {
+            var _val_1 = obj[name_1];
+            Object.defineProperty(obj, name_1, {
+                get: function () {
+                    return _val_1;
+                },
+                set: function (val) {
+                    if (_val_1 !== val) {
+                        _val_1 = val;
+                        onUpdate();
+                    }
+                }
+            });
+        }
+    };
+    for (var name_1 in obj) {
+        _loop_1(name_1);
+    }
+}
+
+var passthru = function (t) { return t; };
+var transform = renderer({
+    getEffects: function (target, props, opts) {
+        var adapter = propertyAdapter;
+        var effects = [];
+        for (var i = 0; i < props.length; i++) {
+            var prop = props[i];
+            var value = opts[prop];
+            var valueAsConfig = value;
+            var hasOptions = isDefined(valueAsConfig.value);
+            var value2 = hasOptions ? valueAsConfig.value : value;
+            effects.push({
+                target: target,
+                prop: prop,
+                mix: mixNumber,
+                format: passthru,
+                set: adapter.set,
+                value: isArray(value2) ? value : [adapter.get(target, prop), value2],
+                easing: (hasOptions && valueAsConfig.easing) || passthru
+            });
+        }
+        return effects;
+    },
+    getTargets: function (targets) {
+        var results = [];
+        resolveDomTargets(targets, results);
+        return results.map(getTransformProxy);
+    }
+});
+function getTransformProxy(el) {
+    var isTargetSVG = isSVG(el);
+    var adapter = isTargetSVG ? attributeAdapter : styleAdapter;
+    var initial = adapter.get(el, 'transform');
+    var target = decomposeMatrix(initial);
+    Object.defineProperty(target, 'scale', {
+        get: function () {
+            return target.scaleX;
+        },
+        set: function (val) {
+            target.scaleX = target.scaleY = val;
+        }
+    });
+    var lUnit = '';
+    var rUnit = '';
+    if (!isTargetSVG) {
+        lUnit = 'px';
+        rUnit = 'deg';
+    }
+    var lastTransform;
+    observe(target, function () {
+        var val = '';
+        if (target.x || target.y) {
+            val += "translate(" + round(target.x) + lUnit + "," + round(target.y) + lUnit + ") ";
+        }
+        if (target.rotate) {
+            val += "rotate(" + roundFloat(target.rotate) + rUnit + ") ";
+        }
+        if (target.skewX) {
+            val += "skewX(" + roundFloat(target.skewX) + rUnit + ") ";
+        }
+        if (target.scaleX !== 1 || target.scaleY !== 1) {
+            val += "scale(" + roundFloat(target.scaleX) + "," + roundFloat(target.scaleY) + ") ";
+        }
+        val = !val ? "translate(0" + lUnit + ")" : val.trim();
+        if (lastTransform !== val) {
+            el.style.transform = lastTransform = val;
+        }
+    });
+    return target;
+}
+
+var w = window;
+w.TRexObservable = TRexObservable;
+w.TyrannoScrollus = TyrannoScrollus;
+w.TweenRex = TweenRex;
+var t = w.tweenrex || (w.tweenrex = {});
+t.interpolate = interpolate;
+t.transform = transform;
 
 }());

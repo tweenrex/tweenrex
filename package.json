@@ -15,8 +15,10 @@
         "rollup-plugin-filesize": "^1.5.0",
         "rollup-plugin-node-resolve": "^3.0.0",
         "rollup-plugin-typescript": "^0.8.1",
+        "rollup-plugin-uglify": "^2.0.1",
         "tslint": "^5.8.0",
         "typescript": "^2.6.2",
+        "uglify-es": "^3.2.1",
         "uglify-js": "^3.2.0"
     },
     "homepage": "https://github.com/tweenrex/tweenrex#readme",
@@ -29,35 +31,11 @@
     "types": "./types/index",
     "typings": "./types/index",
     "scripts": {
-        "build": "concurrently \"npm run build:core\" \"npm run build:debug\" \"npm run build:render\"",
-        "build:core": "cd ./packages/core && npm run rebuild",
-        "build:debug": "cd ./packages/debug && npm run rebuild",
-        "build:render": "cd ./packages/render && npm run rebuild",
-        "clean": "node_modules/.bin/del-cli -f dist",
-        "deploy": "lerna publish --skip-git && npm run push:all",
-        "get-latest": "git submodule update --recursive --remote",
-        "postinstall": "npm run get-latest && npm run update:all",
-        "preversion": "npm run rebuild",
-        "push:all": "npm run push:core && npm run push:debug && npm run push:render && npm run push:main",
-        "push:main": "git add . && git commit -m \"updated version\" && git push",
-        "push:core": "cd ./packages/core && git add . && git commit -m \"updated version\" && git push",
-        "push:debug": "cd ./packages/debug && git add . && git commit -m \"updated version\" && git push",
-        "push:render": "cd ./packages/render && git add . && git commit -m \"updated version\" && git push",
-        "rebuild": "npm i && npm run clean && npm run build && npm run rollup",
-        "rollup": "npm run rollup:core && npm run rollup:debug && npm run rollup:render && npm run rollup:all",
-        "rollup:all": "rollup -c ./config/rollup.all.js && uglifyjs --config-file ./config/compress.json -o dist/tweenrex-all.min.js dist/tweenrex-all.js",
-        "rollup:core": "rollup -c ./config/rollup.core.js && uglifyjs --config-file ./config/compress.json -o dist/tweenrex.min.js dist/tweenrex.js",
-        "rollup:debug": "rollup -c ./config/rollup.debug.js && uglifyjs --config-file ./config/compress.json -o dist/tweenrex-debug.min.js dist/tweenrex-debug.js",
-        "rollup:render": "rollup -c ./config/rollup.render.js && uglifyjs --config-file ./config/compress.json -o dist/tweenrex-render.min.js dist/tweenrex-render.js",
-        "update:all": "concurrently \"npm run update:core\" \"npm run update:debug\" \"npm run update:render\"",
-        "update:core": "cd ./packages/core && npm i",
-        "update:debug": "cd ./packages/debug && npm i",
-        "update:render": "cd ./packages/render && npm i"
+        "build": "lerna bootstrap && lerna run build",
+        "clean": "node_modules/.bin/del-cli -f dist && lerna run clean && lerna clean --yes",
+        "postversion": "node ./scripts/version.js",
+        "rebuild": "npm run clean && npm run build && npm run rollup",
+        "rollup": "node ./scripts/rollup.js"
     },
-    "version": "1.4.0",
-    "dependencies": {
-        "@tweenrex/core": "file:packages/core",
-        "@tweenrex/debug": "file:packages/debug",
-        "@tweenrex/render": "file:packages/render"
-    }
+    "version": "1.4.0"
 }
