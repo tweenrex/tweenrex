@@ -30,9 +30,11 @@
     "types": "./types/index",
     "typings": "./types/index",
     "scripts": {
-        "build": "lerna bootstrap && lerna run build",
-        "clean": "node_modules/.bin/del-cli -f dist && lerna run clean && lerna clean --yes",
-        "postversion": "node ./scripts/version.js",
+        "build": "npm i && git submodule foreach \"npm i\" && git submodule foreach \"npm run build\"",
+        "clean": "node_modules/.bin/del-cli -f dist && git submodule foreach \"npm run clean\"",
+        "get-latest": "git pull && git submodule update --recursive --remote",
+        "postversion": "node ./scripts/version.js && git push --follow-tags && npm publish --access=\"public\"",
+        "preversion": "npm run get-latest && npm run rebuild",
         "rebuild": "npm run clean && npm run build && npm run rollup",
         "rollup": "node ./scripts/rollup.js"
     },

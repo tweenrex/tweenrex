@@ -577,7 +577,7 @@ var cssVariableAdapter = {
 
 var styleAdapter = {
     get: function (target, prop) {
-        return target.style[prop];
+        return getComputedStyle(target)[prop];
     },
     set: function (target, name, value) {
         target.style[name] = value;
@@ -652,7 +652,8 @@ var interpolate = renderer({
             }
             var targetAdapter = getAdapter(target, prop);
             effect.set = effect.set || targetAdapter.set;
-            if (!isArray(value2)) {
+            var isTransition = !isArray(value2);
+            if (isTransition) {
                 effect.value = [targetAdapter.get(target, prop), value2];
             }
             else {
@@ -664,11 +665,13 @@ var interpolate = renderer({
                 var r = effect.value[j];
                 var parsed = parse(r, type);
                 values[j] = parsed.value;
-                if (!effect.mix) {
-                    effect.mix = parsed.mix;
-                }
-                if (!effect.format) {
-                    effect.format = parsed.format;
+                if (!isTransition || j !== 0) {
+                    if (!effect.mix) {
+                        effect.mix = parsed.mix;
+                    }
+                    if (!effect.format) {
+                        effect.format = parsed.format;
+                    }
                 }
             }
             effect.value = values;
@@ -689,6 +692,12 @@ function parse(value, type) {
         }
         else if (isString$1(value) && /\d*/.test(value)) {
             type = TERMS;
+        }
+        else if (!value) {
+            return {
+                value: '',
+                mix: mixDiscrete
+            };
         }
     }
     if (type === NUMBER) {
