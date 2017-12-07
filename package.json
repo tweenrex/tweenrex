@@ -9,7 +9,6 @@
         "babel-core": "^6.26.0",
         "concurrently": "^3.5.1",
         "del-cli": "^1.1.0",
-        "lerna": "^2.5.1",
         "rollup": "^0.51.8",
         "rollup-plugin-commonjs": "^8.2.6",
         "rollup-plugin-filesize": "^1.5.0",
