@@ -80,4 +80,4 @@ Name | Type | Description |
 This library is licensed under MIT.
 
 ## Contributions / Questions
-Please create an issue for questions or to discuss new features.
+Please create an issue for questions or to discuss new features.  There are also plenty of helpful people on the #tweenrex channel on the [Animation at Work Slack](https://damp-lake-50659.herokuapp.com).
