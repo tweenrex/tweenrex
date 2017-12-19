@@ -37,5 +37,5 @@
         "rebuild": "npm run clean && npm run build && npm run rollup",
         "rollup": "node ./scripts/rollup.js"
     },
-    "version": "1.5.0"
+    "version": "1.5.1"
 }
