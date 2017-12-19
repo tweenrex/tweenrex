@@ -32,8 +32,8 @@
         "build": "npm i && git submodule foreach \"npm i\" && git submodule foreach \"npm run build\"",
         "clean": "node_modules/.bin/del-cli -f dist && git submodule foreach \"npm run clean\"",
         "get-latest": "git pull && git submodule update --recursive --remote",
-        "postversion": "git push --follow-tags && npm publish --access=\"public\"",
-        "preversion": "npm run get-latest && npm run rebuild && node ./scripts/version.js",
+        "postversion": "git push --follow-tags && npm publish --access=\"public\" && node ./scripts/version.js",
+        "preversion": "npm run get-latest && npm run rebuild",
         "rebuild": "npm run clean && npm run build && npm run rollup",
         "rollup": "node ./scripts/rollup.js"
     },

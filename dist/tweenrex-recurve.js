@@ -14,7 +14,7 @@ function recurve(easing) {
     return {
         in: easing,
         out: (n) => 1 - easing(1 - n),
-        inOut: (n) => n < 0.5 ? easing(n * 2.0) / 2.0 : 1 - easing((1 - n) * 2) / 2
+        inOut: (n) => (n < 0.5 ? easing(n * 2.0) / 2.0 : 1 - easing((1 - n) * 2) / 2)
     };
 }
 
@@ -85,7 +85,7 @@ elastic.out = defaultEasing$2.out;
 elastic.inOut = defaultEasing$2.inOut;
 
 const expo = ((f) => {
-    return recurve(n => n === 0 ? 0 : pow(f, 10 * (n - 1)));
+    return recurve(n => (n === 0 ? 0 : pow(f, 10 * (n - 1))));
 });
 const defaultEasing$3 = expo(2);
 expo.in = defaultEasing$3.in;

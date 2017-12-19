@@ -134,6 +134,7 @@ function TyrannoScrollus(options) {
             self.next(value);
         }
         else if (self.easing.tr_type === 'ASYNC') {
+            
             self.easing(value, self.next);
         }
         else {
@@ -346,7 +347,7 @@ TweenRex.prototype = {
         var tweens = self._tweens;
         if (tweens) {
             var d_1 = duration - c;
-            tweens.sort(function (a, b) { return ((d_1 + a.pos) % duration) - ((d_1 + b.pos) % duration); });
+            tweens.sort(function (a, b) { return (d_1 + a.pos) % duration - (d_1 + b.pos) % duration; });
             if (isSeekingBackward) {
                 tweens.reverse();
             }
@@ -370,7 +371,9 @@ TweenRex.prototype = {
     }
 };
 function ensureTween(opts) {
-    return opts instanceof TweenRex ? opts : TweenRex(opts);
+    return opts instanceof TweenRex
+        ? opts
+        : TweenRex(opts);
 }
 
 var floatExp = /^(\-?\d+\.?\d{0,5})/;
@@ -897,7 +900,7 @@ function recurve(easing) {
     return {
         in: easing,
         out: (n) => 1 - easing(1 - n),
-        inOut: (n) => n < 0.5 ? easing(n * 2.0) / 2.0 : 1 - easing((1 - n) * 2) / 2
+        inOut: (n) => (n < 0.5 ? easing(n * 2.0) / 2.0 : 1 - easing((1 - n) * 2) / 2)
     };
 }
 
@@ -968,7 +971,7 @@ elastic.out = defaultEasing$2.out;
 elastic.inOut = defaultEasing$2.inOut;
 
 const expo = ((f) => {
-    return recurve(n => n === 0 ? 0 : pow(f, 10 * (n - 1)));
+    return recurve(n => (n === 0 ? 0 : pow(f, 10 * (n - 1))));
 });
 const defaultEasing$3 = expo(2);
 expo.in = defaultEasing$3.in;

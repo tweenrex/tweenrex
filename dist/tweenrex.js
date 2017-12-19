@@ -134,6 +134,7 @@ function TyrannoScrollus(options) {
             self.next(value);
         }
         else if (self.easing.tr_type === 'ASYNC') {
+            
             self.easing(value, self.next);
         }
         else {
@@ -346,7 +347,7 @@ TweenRex.prototype = {
         var tweens = self._tweens;
         if (tweens) {
             var d_1 = duration - c;
-            tweens.sort(function (a, b) { return ((d_1 + a.pos) % duration) - ((d_1 + b.pos) % duration); });
+            tweens.sort(function (a, b) { return (d_1 + a.pos) % duration - (d_1 + b.pos) % duration; });
             if (isSeekingBackward) {
                 tweens.reverse();
             }
@@ -370,7 +371,9 @@ TweenRex.prototype = {
     }
 };
 function ensureTween(opts) {
-    return opts instanceof TweenRex ? opts : TweenRex(opts);
+    return opts instanceof TweenRex
+        ? opts
+        : TweenRex(opts);
 }
 
 var global = window;
