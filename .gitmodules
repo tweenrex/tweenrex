@@ -7,3 +7,6 @@
 [submodule "packages/debug"]
 	path = packages/debug
 	url = https://github.com/tweenrex/debug.git
+[submodule "packages/recurve"]
+	path = packages/recurve
+	url = https://github.com/tweenrex/recurve.git

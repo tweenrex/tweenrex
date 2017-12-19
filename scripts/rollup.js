@@ -102,6 +102,22 @@ rollup.rollup(config({ input: 'src/render.ts', minify: true })).then(bundle => {
     })
 })
 
+// render bundle
+rollup.rollup(config({ input: 'src/recurve.ts' })).then(bundle => {
+    write(bundle, {
+        file: 'dist/tweenrex-recurve.js',
+        format: 'iife'
+    })
+})
+
+// render minified bundle
+rollup.rollup(config({ input: 'src/recurve.ts', minify: true })).then(bundle => {
+    write(bundle, {
+        file: 'dist/tweenrex-recurve.min.js',
+        format: 'iife'
+    })
+})
+
 // all bundle
 rollup.rollup(config({ input: 'src/all.ts' })).then(bundle => {
     write(bundle, {
