@@ -40,7 +40,10 @@ easing | Eases subscribe by a function. |
 frameSize | Enforces a fixed amount of time per frame.  If ```0```, Tweens will use actual deltas and attempt to sync to requestAnimationFrame.  The default value is ```0```. |
 labels | A dictionary of named times used for seeking |
 onDispose| Triggered by calling dispose() |
+onFinish| Triggered by reaching the "end" while playing. When playing forwards, the "end" is the duration.  When playing backwards, the "end" is 0. This is only triggered by the parent TweenRex instance. |
 onNext| Triggered by calling next() |
+onPause| Triggered by calling .pause() when TweenRex is playing. This is only triggered by the parent TweenRex instance. |
+onPlay| Triggered by calling .play() or .restart() when TweenRex is not playing. This is only triggered by the parent TweenRex instance. |
 onSubscribe| Triggered by calling subscribe() |
 onUnsubscribe| Triggered by unsubscribing |
 subscribe | Subscribes to changes in the value.  The value provided is a number between 0 and 1 representing 0% to 100% of time elapsed.  This can be either a function or an array of functions. |
